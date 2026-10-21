@@ -7,10 +7,14 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "site_template.html"
 OUT = ROOT / "index.html"
 DATA_DIR = ROOT / "data"
+DOCX_EXPORTER = ROOT / "scripts" / "docx_export.js"
 
 template = TEMPLATE.read_text(encoding="utf-8")
 if template.count("__DATA__") != 1:
     raise SystemExit("site_template.html must contain exactly one __DATA__ token")
+if template.count("__DOCX_EXPORT__") != 1:
+    raise SystemExit("site_template.html must contain exactly one __DOCX_EXPORT__ token")
+exporter = DOCX_EXPORTER.read_text(encoding="utf-8")
 months = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(DATA_DIR.glob("*.json"))]
 if not months:
     raise SystemExit("No month JSON data found")
@@ -31,7 +35,7 @@ for m in months:
                 raise SystemExit(f"Missing or unsafe image path: {image['src']}")
 months.sort(key=lambda m: (int(m["year"]), int(m["month"])))
 payload = json.dumps(months, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
-OUT.write_text(template.replace("__DATA__", payload), encoding="utf-8")
+OUT.write_text(template.replace("__DATA__", payload).replace("__DOCX_EXPORT__", exporter), encoding="utf-8")
 print(f"Built {OUT.name}: {len(months)} months, {len(seen_ids)} articles")
 for m in months:
     print(f"{m['label']}: {len(m.get('entries', []))} entries, {sum(len(e.get('images', [])) for e in m.get('entries', []))} image placements")
