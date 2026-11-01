@@ -445,58 +445,35 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
     root.add(makeLabel("月份總覽", `${latest.label} ${latest.entries} 篇 · 全部 ${archiveTotal} 篇`, route, { x: 0, y: 2.9, z: 0 }, "hub-label"));
   }
 
-  // ── 島民：巴哥（Q版巴哥）、澄瑛（chibi） ──；不進 raycast targets
+  // ── 島民：巴哥、澄瑛（皆 chibi 人物） ──；不進 raycast targets
   function residentLabel(person, name, y) {
     const tag = document.createElement("span");
     tag.className = "resident-label";
     tag.textContent = name;
-    const label = new CSS2DObject(tag);
+    const wrap = document.createElement("div"); // CSS2DRenderer 會覆寫 wrap 的 transform；縮放放在內層
+    wrap.style.pointerEvents = "none";
+    wrap.appendChild(tag);
+    const label = new CSS2DObject(wrap);
     label.position.set(0, y, 0);
     person.add(label);
     person.userData.tag = tag;
   }
-  function makePug(name) {
+  // 兩位島民皆為 chibi 人物；以髮型／衣色區分
+  function makeChibi(name, look = {}) {
+    const o = { pants: "#78685e", shirt: "#fff8f4", vest: "#db6a41", hair: "#2e2522", hairCap: 0.58, hairTilt: -0.25, bangs: false, ...look };
     const person = new THREE.Group();
-    const fur = "#e8d4b8", dark = "#6b4a33";
-    const body = mesh(new THREE.CapsuleGeometry(0.2, 0.32, 3, 8), fur);
-    body.rotation.z = Math.PI / 2; body.position.y = 0.3;
-    const head = mesh(new THREE.SphereGeometry(0.22, 10, 8), fur); head.position.set(0.3, 0.52, 0);
-    const muzzle = mesh(new THREE.SphereGeometry(0.11, 8, 6), dark); muzzle.scale.set(0.7, 0.8, 1.1); muzzle.position.set(0.47, 0.47, 0);
-    const collar = mesh(new THREE.TorusGeometry(0.15, 0.035, 6, 14), "#db6a41"); collar.rotation.y = Math.PI / 2; collar.position.set(0.2, 0.4, 0);
-    person.add(body, head, muzzle, collar);
-    for (const side of [-1, 1]) {
-      const ear = mesh(new THREE.ConeGeometry(0.07, 0.12, 4), dark); ear.position.set(0.28, 0.72, side * 0.14); ear.rotation.x = side * 0.5;
-      const eye = mesh(new THREE.SphereGeometry(0.03, 6, 4), "#211d1d"); eye.position.set(0.48, 0.58, side * 0.08);
-      person.add(ear, eye);
-      for (const fx of [-0.18, 0.18]) { const leg = mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.16, 6), fur); leg.position.set(fx, 0.08, side * 0.12); person.add(leg); }
-    }
-    const tail = mesh(new THREE.TorusGeometry(0.06, 0.025, 5, 10, Math.PI * 1.5), fur); tail.position.set(-0.36, 0.45, 0); person.add(tail);
-    residentLabel(person, name, 1.05);
-    person.userData.body = body;
-    world.add(person);
-    return person;
-  }
-  function makeChibi(name) {
-    const person = new THREE.Group();
-    const legs = mesh(new THREE.CylinderGeometry(0.09, 0.1, 0.22, 6), "#78685e"); legs.position.y = 0.11;
-    const body = mesh(new THREE.CapsuleGeometry(0.16, 0.24, 3, 8), "#fff8f4"); body.position.y = 0.42;
-    const vest = mesh(new THREE.CylinderGeometry(0.175, 0.19, 0.2, 8, 1, true), "#db6a41"); vest.position.y = 0.44;
+    const legs = mesh(new THREE.CylinderGeometry(0.09, 0.1, 0.22, 6), o.pants); legs.position.y = 0.11;
+    const body = mesh(new THREE.CapsuleGeometry(0.16, 0.24, 3, 8), o.shirt); body.position.y = 0.42;
+    const vest = mesh(new THREE.CylinderGeometry(0.175, 0.19, 0.2, 8, 1, true), o.vest); vest.position.y = 0.44;
     const head = mesh(new THREE.SphereGeometry(0.24, 12, 10), "#f3cfae"); head.position.y = 0.9;
-    const hair = mesh(new THREE.SphereGeometry(0.262, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.58), "#2e2522"); hair.position.y = 0.92; hair.rotation.z = -0.25;
+    const hair = mesh(new THREE.SphereGeometry(0.262, 12, 10, 0, Math.PI * 2, 0, Math.PI * o.hairCap), o.hair); hair.position.y = 0.92; hair.rotation.z = o.hairTilt;
     person.add(legs, body, vest, head, hair);
+    if (o.bangs) { const fringe = mesh(new THREE.BoxGeometry(0.1, 0.06, 0.34), o.hair); fringe.position.set(0.18, 1.08, 0); person.add(fringe); }
     for (const side of [-1, 1]) { const eye = mesh(new THREE.SphereGeometry(0.03, 6, 4), "#211d1d"); eye.position.set(0.22, 0.88, side * 0.08); person.add(eye); }
     residentLabel(person, name, 1.5);
     person.userData.body = body;
     world.add(person);
     return person;
-  }
-
-  // 島民沿「朝橋」短弧路徑閒晃（島座標 -> 世界座標）
-  function residentPath(groupId, towardId, radius) {
-    const c = islandCenters[groupId];
-    const t = islandCenters[towardId];
-    const base = Math.atan2(t.z - c.z, t.x - c.x);
-    return { c, base, radius, spread: 0.42 };
   }
 
   groupIds.forEach((id) => addGroupIsland(id));
@@ -514,23 +491,129 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
     }
   });
   world.userData.bridges = bridges;
+
+  // ── 外圈遊輪：低多邊形玩具船，對向巡航，不進 raycast、無名牌 ──
+  // 島群外緣（淺水）約 12.5、最外浮標約 13.0。規格帶 13.2–13.8 寬只有 0.6，容不下船寬 1.11 的對向交會，
+  // 因此內側取帶內 13.62（船殼內緣約 13.07，避開浮標），外側 14.86，交會橫距約 0.13。
+  const CRUISE = {
+    y: 0.22,
+    period: 115,
+    ships: [
+      { radius: 13.62, phase: 0, dir: 1, stripe: "#45abbb", funnel: "#db6a41" },
+      { radius: 14.86, phase: Math.PI, dir: -1, stripe: "#db6a41", funnel: "#45abbb" }
+    ]
+  };
+  const cruiseMat = { roughness: 0.82, metalness: 0 };
+  function makeCruiseShip(stripe, funnel) {
+    const ship = new THREE.Group();
+    const add = (geo, color, x, y, z) => {
+      const part = mesh(geo, color, cruiseMat);
+      part.position.set(x, y, z);
+      ship.add(part);
+      return part;
+    };
+    // 船底薄條、奶油船殼、吃水／腰線。原點約在水線，+Z 為船首。
+    add(new THREE.BoxGeometry(0.92, 0.07, 3.28), "#c5b5a7", 0, -0.145, -0.16);
+    add(new THREE.BoxGeometry(1.02, 0.40, 3.36), "#fff8f4", 0, 0.06, -0.12);
+    add(new THREE.BoxGeometry(1.10, 0.055, 3.30), stripe, 0, -0.02, -0.14);
+    add(new THREE.BoxGeometry(0.78, 0.30, 0.42), "#fff8f4", 0, 0.02, 1.68);
+    add(new THREE.BoxGeometry(0.46, 0.18, 0.28), "#fff8f4", 0, -0.02, 1.98);
+    add(new THREE.BoxGeometry(0.80, 0.045, 0.36), stripe, 0, -0.02, 1.66);
+    // 兩層甲板＋短煙囪（奶油帽）
+    add(new THREE.BoxGeometry(0.96, 0.08, 2.42), "#e6d8c8", 0, 0.30, -0.28);
+    add(new THREE.BoxGeometry(0.72, 0.38, 1.82), "#fff8f4", 0, 0.53, -0.42);
+    add(new THREE.BoxGeometry(0.62, 0.07, 1.22), "#e6d8c8", 0, 0.755, -0.52);
+    add(new THREE.BoxGeometry(0.46, 0.22, 0.52), "#fff8f4", 0, 0.90, -0.12);
+    add(new THREE.CylinderGeometry(0.10, 0.125, 0.58, 6), funnel, 0, 1.07, -0.86);
+    add(new THREE.CylinderGeometry(0.15, 0.15, 0.08, 6), "#fff8f4", 0, 1.39, -0.86);
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 5; i += 1) {
+        add(new THREE.BoxGeometry(0.045, 0.09, 0.12), "#8fd3da", side * 0.532, 0.10, -1.12 + i * 0.46);
+      }
+    }
+    ship.traverse((obj) => { obj.raycast = () => {}; });
+    return ship;
+  }
+  const cruises = CRUISE.ships.map((spec) => ({ ...spec, group: makeCruiseShip(spec.stripe, spec.funnel) }));
+  cruises.forEach((ship) => world.add(ship.group));
+  function poseCruise(ship, angle) {
+    ship.group.position.set(Math.cos(angle) * ship.radius, CRUISE.y, Math.sin(angle) * ship.radius);
+    ship.group.rotation.y = ship.dir > 0 ? -angle : Math.PI - angle;
+  }
+  cruises.forEach((ship) => poseCruise(ship, ship.phase));
+  let cruiseStart = null;
+  function placeCruises(nowSec) {
+    if (reducedMotion) return;
+    if (cruiseStart === null) cruiseStart = nowSec;
+    const base = ((nowSec - cruiseStart) / CRUISE.period) * Math.PI * 2;
+    cruises.forEach((ship) => poseCruise(ship, ship.phase + ship.dir * base));
+  }
+  // 島民：只有巴哥、澄瑛兩位；輪流逛遍三座島（走完一座再挑下一座未逛的），沿岸弧線＋橋面移動，不穿建築
+  const WALK_R = 2.75; // 建築環 2.15 之外、近水岸
+  const EDGE_R = LAYOUT.islandRadius - 0.1;
+  const angTo = (from, to) => Math.atan2(islandCenters[to].z - islandCenters[from].z, islandCenters[to].x - islandCenters[from].x);
+  const onIsland = (id, a, r = WALK_R, y = 1.1) => new THREE.Vector3(islandCenters[id].x + Math.cos(a) * r, y, islandCenters[id].z + Math.sin(a) * r);
+  function arcPoints(id, a0, a1) {
+    let d = a1 - a0;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    const steps = Math.max(1, Math.ceil(Math.abs(d) / 0.25));
+    const pts = [];
+    for (let i = 1; i <= steps; i += 1) pts.push(onIsland(id, a0 + (d * i) / steps));
+    return pts;
+  }
+  function planLeg(res) {
+    let pool = groupIds.filter((id) => id !== res.island && !res.visited.has(id));
+    if (!pool.length) { res.visited = new Set([res.island]); pool = groupIds.filter((id) => id !== res.island); }
+    const next = pool[Math.floor(Math.random() * pool.length)];
+    const out = angTo(res.island, next);
+    const inA = angTo(next, res.island);
+    const pts = arcPoints(res.island, res.angle, out);
+    pts.push(onIsland(res.island, out, EDGE_R, 1.1));
+    pts.push(onIsland(next, inA, EDGE_R, 1.1));
+    pts.push(onIsland(next, inA));
+    const stroll = inA + (Math.random() < 0.5 ? -1 : 1) * (1.2 + Math.random() * 2.6);
+    pts.push(...arcPoints(next, inA, stroll));
+    res.island = next; res.angle = stroll; res.visited.add(next);
+    res.queue = pts;
+    res.pause = 1.2 + Math.random() * 2.5;
+  }
+  function makeResident(meshObj, island, angle) {
+    const res = { mesh: meshObj, island, angle, visited: new Set([island]), queue: [], pause: 0, phase: Math.random() * 6 };
+    meshObj.position.copy(onIsland(island, angle));
+    meshObj.rotation.y = -(angle + Math.PI / 2);
+    return res;
+  }
   const residents = [
-    { mesh: makePug("巴哥"), path: residentPath(1, 2, 2.75), phase: 0 },
-    { mesh: makeChibi("澄瑛"), path: residentPath(2, 3, 2.75), phase: 1.7 },
-    { mesh: makePug("巴哥"), path: residentPath(3, 1, 2.75), phase: 3.1 },
-    { mesh: makeChibi("澄瑛"), path: residentPath(3, 2, 2.6), phase: 4.4 }
+    makeResident(makeChibi("巴哥", { shirt: "#45abbb", vest: "#fcea8b", pants: "#211d1d", hair: "#6b4a33", hairCap: 0.42, hairTilt: 0, bangs: true }), 1, angTo(1, 2) - 0.9),
+    makeResident(makeChibi("澄瑛"), 3, angTo(3, 2) + 0.9)
   ];
-  function placeResident(res, time) {
-    const p = res.path;
-    const s = reducedMotion ? 0 : Math.sin(time * 0.25 + res.phase);
-    const a = p.base + s * p.spread;
-    res.mesh.position.set(p.c.x + Math.cos(a) * p.radius, 1.1, p.c.z + Math.sin(a) * p.radius);
-    const dir = reducedMotion ? 0 : Math.cos(time * 0.25 + res.phase);
-    res.mesh.rotation.y = -(a + (dir >= 0 ? Math.PI / 2 : -Math.PI / 2));
-    const breathe = reducedMotion ? 1 : 1 + Math.sin(time * 2.1 + res.phase) * 0.035;
+  const WALK_SPEED = 0.9;
+  let lastTick = 0;
+  function stepResident(res, time, dt) {
+    if (res.pause > 0) { res.pause -= dt; }
+    else {
+      if (!res.queue.length) planLeg(res);
+      let move = WALK_SPEED * dt;
+      while (move > 0 && res.queue.length) {
+        const target = res.queue[0];
+        const dx = target.x - res.mesh.position.x, dz = target.z - res.mesh.position.z;
+        const d = Math.hypot(dx, dz);
+        if (d > 1e-4) res.mesh.rotation.y = -Math.atan2(dz, dx);
+        if (d <= move) { res.mesh.position.copy(target); res.queue.shift(); move -= d; }
+        else { res.mesh.position.x += (dx / d) * move; res.mesh.position.z += (dz / d) * move; move = 0; }
+      }
+      if (!res.queue.length) res.pause = 1.2 + Math.random() * 2.5;
+    }
+    const walking = res.pause <= 0;
+    res.mesh.position.y = 1.1 + (walking ? Math.abs(Math.sin(time * 9 + res.phase)) * 0.05 : 0);
+    const breathe = 1 + Math.sin(time * 2.1 + res.phase) * 0.035;
     res.mesh.userData.body.scale.set(1, breathe, 1);
   }
-  residents.forEach((res) => placeResident(res, 0));
+  function placeResident(res, time) {
+    const dt = lastTick ? Math.min(0.1, time - lastTick) : 0;
+    stepResident(res, time, dt);
+  }
 
   const sceneExtent = LAYOUT.ringRadius + LAYOUT.islandRadius;
   const viewDistance = (width) => Math.max(width < 560 ? 44 : 34, sceneExtent * (width < 560 ? 3.6 : 2.9));
@@ -685,9 +768,15 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
       controls.target.lerpVectors(flight.fromTarget, flight.toTarget, e);
       if (k >= 1) { const r = flight.route; flight = null; location.href = r; }
     }
-    if (!reducedMotion) residents.forEach((res) => placeResident(res, now / 1000));
-    const near = camera.position.distanceTo(controls.target) < 30;
-    residents.forEach((res) => { if (res.mesh.userData.tag) res.mesh.userData.tag.style.opacity = near ? "1" : "0"; });
+    if (!reducedMotion) {
+      const t = now / 1000;
+      residents.forEach((res) => placeResident(res, t));
+      placeCruises(t);
+      lastTick = t;
+    }
+    const camDist = camera.position.distanceTo(controls.target);
+    const tagScale = camDist < 26 ? 1 : Math.max(0.78, 1 - (camDist - 26) / 60);
+    residents.forEach((res) => { const t = res.mesh.userData.tag; if (t) { t.style.opacity = "1"; t.style.setProperty("--tag-scale", tagScale.toFixed(2)); } });
     const dist = camera.position.distanceTo(controls.target);
     const catOpacity = dist < 34 ? "1" : dist < 42 ? "0.35" : "0";
     if (catOpacity !== world.userData.catOpacity) {
