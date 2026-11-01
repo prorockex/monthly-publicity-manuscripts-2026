@@ -30,7 +30,9 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
     data = {};
   }
   const months = Array.isArray(data.months) ? data.months : [];
-  const latest = months[months.length - 1];
+  let storedMonth = null;
+  try { storedMonth = localStorage.getItem("homeIslandMonth"); } catch (_) {}
+  const latest = months.find((m) => m.key === storedMonth) || months[months.length - 1];
   const reviewURL = (month, options = {}) => {
     const query = new URLSearchParams({ month });
     if (options.group !== undefined) query.set("group", String(options.group));
@@ -440,7 +442,7 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
       targets.push(m);
     }
     const archiveTotal = Number(data.totalEntries) || months.reduce((s, m) => s + Number(m.entries || 0), 0);
-    root.add(makeLabel("月份總覽", `最新 ${latest.label} · 共 ${archiveTotal} 篇`, route, { x: 0, y: 2.9, z: 0 }, "hub-label"));
+    root.add(makeLabel("月份總覽", `${latest.label} ${latest.entries} 篇 · 全部 ${archiveTotal} 篇`, route, { x: 0, y: 2.9, z: 0 }, "hub-label"));
   }
 
   // ── 島民：巴哥（Q版巴哥）、澄瑛（chibi） ──；不進 raycast targets
