@@ -445,7 +445,7 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
     root.add(makeLabel("月份總覽", `${latest.label} ${latest.entries} 篇 · 全部 ${archiveTotal} 篇`, route, { x: 0, y: 2.9, z: 0 }, "hub-label"));
   }
 
-  // ── 島民：巴哥（Q版巴哥）、澄瑛（chibi） ──；不進 raycast targets
+  // ── 島民：巴哥、澄瑛（皆 chibi 人物） ──；不進 raycast targets
   function residentLabel(person, name, y) {
     const tag = document.createElement("span");
     tag.className = "resident-label";
@@ -458,35 +458,17 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
     person.add(label);
     person.userData.tag = tag;
   }
-  function makePug(name) {
+  // 兩位島民皆為 chibi 人物；以髮型／衣色區分
+  function makeChibi(name, look = {}) {
+    const o = { pants: "#78685e", shirt: "#fff8f4", vest: "#db6a41", hair: "#2e2522", hairCap: 0.58, hairTilt: -0.25, bangs: false, ...look };
     const person = new THREE.Group();
-    const fur = "#e8d4b8", dark = "#6b4a33";
-    const body = mesh(new THREE.CapsuleGeometry(0.2, 0.32, 3, 8), fur);
-    body.rotation.z = Math.PI / 2; body.position.y = 0.3;
-    const head = mesh(new THREE.SphereGeometry(0.22, 10, 8), fur); head.position.set(0.3, 0.52, 0);
-    const muzzle = mesh(new THREE.SphereGeometry(0.11, 8, 6), dark); muzzle.scale.set(0.7, 0.8, 1.1); muzzle.position.set(0.47, 0.47, 0);
-    const collar = mesh(new THREE.TorusGeometry(0.15, 0.035, 6, 14), "#db6a41"); collar.rotation.y = Math.PI / 2; collar.position.set(0.2, 0.4, 0);
-    person.add(body, head, muzzle, collar);
-    for (const side of [-1, 1]) {
-      const ear = mesh(new THREE.ConeGeometry(0.07, 0.12, 4), dark); ear.position.set(0.28, 0.72, side * 0.14); ear.rotation.x = side * 0.5;
-      const eye = mesh(new THREE.SphereGeometry(0.03, 6, 4), "#211d1d"); eye.position.set(0.48, 0.58, side * 0.08);
-      person.add(ear, eye);
-      for (const fx of [-0.18, 0.18]) { const leg = mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.16, 6), fur); leg.position.set(fx, 0.08, side * 0.12); person.add(leg); }
-    }
-    const tail = mesh(new THREE.TorusGeometry(0.06, 0.025, 5, 10, Math.PI * 1.5), fur); tail.position.set(-0.36, 0.45, 0); person.add(tail);
-    residentLabel(person, name, 1.05);
-    person.userData.body = body;
-    world.add(person);
-    return person;
-  }
-  function makeChibi(name) {
-    const person = new THREE.Group();
-    const legs = mesh(new THREE.CylinderGeometry(0.09, 0.1, 0.22, 6), "#78685e"); legs.position.y = 0.11;
-    const body = mesh(new THREE.CapsuleGeometry(0.16, 0.24, 3, 8), "#fff8f4"); body.position.y = 0.42;
-    const vest = mesh(new THREE.CylinderGeometry(0.175, 0.19, 0.2, 8, 1, true), "#db6a41"); vest.position.y = 0.44;
+    const legs = mesh(new THREE.CylinderGeometry(0.09, 0.1, 0.22, 6), o.pants); legs.position.y = 0.11;
+    const body = mesh(new THREE.CapsuleGeometry(0.16, 0.24, 3, 8), o.shirt); body.position.y = 0.42;
+    const vest = mesh(new THREE.CylinderGeometry(0.175, 0.19, 0.2, 8, 1, true), o.vest); vest.position.y = 0.44;
     const head = mesh(new THREE.SphereGeometry(0.24, 12, 10), "#f3cfae"); head.position.y = 0.9;
-    const hair = mesh(new THREE.SphereGeometry(0.262, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.58), "#2e2522"); hair.position.y = 0.92; hair.rotation.z = -0.25;
+    const hair = mesh(new THREE.SphereGeometry(0.262, 12, 10, 0, Math.PI * 2, 0, Math.PI * o.hairCap), o.hair); hair.position.y = 0.92; hair.rotation.z = o.hairTilt;
     person.add(legs, body, vest, head, hair);
+    if (o.bangs) { const fringe = mesh(new THREE.BoxGeometry(0.1, 0.06, 0.34), o.hair); fringe.position.set(0.18, 1.08, 0); person.add(fringe); }
     for (const side of [-1, 1]) { const eye = mesh(new THREE.SphereGeometry(0.03, 6, 4), "#211d1d"); eye.position.set(0.22, 0.88, side * 0.08); person.add(eye); }
     residentLabel(person, name, 1.5);
     person.userData.body = body;
@@ -546,7 +528,7 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
     return res;
   }
   const residents = [
-    makeResident(makePug("巴哥"), 1, angTo(1, 2) - 0.9),
+    makeResident(makeChibi("巴哥", { shirt: "#45abbb", vest: "#fcea8b", pants: "#211d1d", hair: "#6b4a33", hairCap: 0.42, hairTilt: 0, bangs: true }), 1, angTo(1, 2) - 0.9),
     makeResident(makeChibi("澄瑛"), 3, angTo(3, 2) + 0.9)
   ];
   const WALK_SPEED = 0.9;
