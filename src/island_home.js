@@ -491,6 +491,63 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
     }
   });
   world.userData.bridges = bridges;
+
+  // ── 外圈遊輪：低多邊形玩具船，對向巡航，不進 raycast、無名牌 ──
+  // 島群外緣（淺水）約 12.5、最外浮標約 13.0。規格帶 13.2–13.8 寬只有 0.6，容不下船寬 1.11 的對向交會，
+  // 因此內側取帶內 13.62（船殼內緣約 13.07，避開浮標），外側 14.86，交會橫距約 0.13。
+  const CRUISE = {
+    y: 0.22,
+    period: 115,
+    ships: [
+      { radius: 13.62, phase: 0, dir: 1, stripe: "#45abbb", funnel: "#db6a41" },
+      { radius: 14.86, phase: Math.PI, dir: -1, stripe: "#db6a41", funnel: "#45abbb" }
+    ]
+  };
+  const cruiseMat = { roughness: 0.82, metalness: 0 };
+  function makeCruiseShip(stripe, funnel) {
+    const ship = new THREE.Group();
+    const add = (geo, color, x, y, z) => {
+      const part = mesh(geo, color, cruiseMat);
+      part.position.set(x, y, z);
+      ship.add(part);
+      return part;
+    };
+    // 船底薄條、奶油船殼、吃水／腰線。原點約在水線，+Z 為船首。
+    add(new THREE.BoxGeometry(0.92, 0.07, 3.28), "#c5b5a7", 0, -0.145, -0.16);
+    add(new THREE.BoxGeometry(1.02, 0.40, 3.36), "#fff8f4", 0, 0.06, -0.12);
+    add(new THREE.BoxGeometry(1.10, 0.055, 3.30), stripe, 0, -0.02, -0.14);
+    add(new THREE.BoxGeometry(0.78, 0.30, 0.42), "#fff8f4", 0, 0.02, 1.68);
+    add(new THREE.BoxGeometry(0.46, 0.18, 0.28), "#fff8f4", 0, -0.02, 1.98);
+    add(new THREE.BoxGeometry(0.80, 0.045, 0.36), stripe, 0, -0.02, 1.66);
+    // 兩層甲板＋短煙囪（奶油帽）
+    add(new THREE.BoxGeometry(0.96, 0.08, 2.42), "#e6d8c8", 0, 0.30, -0.28);
+    add(new THREE.BoxGeometry(0.72, 0.38, 1.82), "#fff8f4", 0, 0.53, -0.42);
+    add(new THREE.BoxGeometry(0.62, 0.07, 1.22), "#e6d8c8", 0, 0.755, -0.52);
+    add(new THREE.BoxGeometry(0.46, 0.22, 0.52), "#fff8f4", 0, 0.90, -0.12);
+    add(new THREE.CylinderGeometry(0.10, 0.125, 0.58, 6), funnel, 0, 1.07, -0.86);
+    add(new THREE.CylinderGeometry(0.15, 0.15, 0.08, 6), "#fff8f4", 0, 1.39, -0.86);
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 5; i += 1) {
+        add(new THREE.BoxGeometry(0.045, 0.09, 0.12), "#8fd3da", side * 0.532, 0.10, -1.12 + i * 0.46);
+      }
+    }
+    ship.traverse((obj) => { obj.raycast = () => {}; });
+    return ship;
+  }
+  const cruises = CRUISE.ships.map((spec) => ({ ...spec, group: makeCruiseShip(spec.stripe, spec.funnel) }));
+  cruises.forEach((ship) => world.add(ship.group));
+  function poseCruise(ship, angle) {
+    ship.group.position.set(Math.cos(angle) * ship.radius, CRUISE.y, Math.sin(angle) * ship.radius);
+    ship.group.rotation.y = ship.dir > 0 ? -angle : Math.PI - angle;
+  }
+  cruises.forEach((ship) => poseCruise(ship, ship.phase));
+  let cruiseStart = null;
+  function placeCruises(nowSec) {
+    if (reducedMotion) return;
+    if (cruiseStart === null) cruiseStart = nowSec;
+    const base = ((nowSec - cruiseStart) / CRUISE.period) * Math.PI * 2;
+    cruises.forEach((ship) => poseCruise(ship, ship.phase + ship.dir * base));
+  }
   // 島民：只有巴哥、澄瑛兩位；輪流逛遍三座島（走完一座再挑下一座未逛的），沿岸弧線＋橋面移動，不穿建築
   const WALK_R = 2.75; // 建築環 2.15 之外、近水岸
   const EDGE_R = LAYOUT.islandRadius - 0.1;
@@ -711,7 +768,12 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
       controls.target.lerpVectors(flight.fromTarget, flight.toTarget, e);
       if (k >= 1) { const r = flight.route; flight = null; location.href = r; }
     }
-    if (!reducedMotion) { residents.forEach((res) => placeResident(res, now / 1000)); lastTick = now / 1000; }
+    if (!reducedMotion) {
+      const t = now / 1000;
+      residents.forEach((res) => placeResident(res, t));
+      placeCruises(t);
+      lastTick = t;
+    }
     const camDist = camera.position.distanceTo(controls.target);
     const tagScale = camDist < 26 ? 1 : Math.max(0.78, 1 - (camDist - 26) / 60);
     residents.forEach((res) => { const t = res.mesh.userData.tag; if (t) { t.style.opacity = "1"; t.style.setProperty("--tag-scale", tagScale.toFixed(2)); } });
