@@ -1,0 +1,15 @@
+{
+  "name": "monthly-publicity-manuscripts-2026",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static island homepage and monthly publicity manuscript review site",
+  "scripts": {
+    "build:home": "esbuild src/island_home.js --bundle --minify --format=iife --target=es2020 --outfile=assets/island-home.bundle.js",
+    "build:site": "npm run build:home && python3 scripts/build_monthly_site.py",
+    "test": "python3 -m unittest discover -s tests -v"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.187.0"
+  }
+}
