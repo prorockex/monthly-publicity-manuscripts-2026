@@ -29,6 +29,13 @@ def summarize_months(months):
                 group_counts[0] += 1
         categories = sorted(category_counts, key=lambda value: (CATEGORY_ORDER.index(value) if value in CATEGORY_ORDER else len(CATEGORY_ORDER), value))
         groups = sorted(group_counts)
+        group_categories = {}
+        for entry in entries:
+            try:
+                gid = int(entry.get("group", 0))
+            except (TypeError, ValueError):
+                gid = 0
+            group_categories.setdefault(gid, Counter())[str(entry.get("category", "待分類"))] += 1
         key = "{}-{:02d}".format(int(month["year"]), int(month["month"]))
         summaries.append({
             "year": int(month["year"]),
@@ -42,6 +49,13 @@ def summarize_months(months):
                 {"id": group, "label": "未指定組別" if group == 0 else "第 {} 組".format(group), "count": group_counts[group]}
                 for group in groups
             ],
+            "groupCategories": {
+                str(gid): [
+                    {"name": name, "count": counts[name]}
+                    for name in sorted(counts, key=lambda value: (CATEGORY_ORDER.index(value) if value in CATEGORY_ORDER else len(CATEGORY_ORDER), value))
+                ]
+                for gid, counts in sorted(group_categories.items())
+            },
         })
     return {
         "months": summaries,
@@ -70,6 +84,21 @@ def home_navigation_html(summary):
     )
     group_links = "".join(
         _link(item["label"], reviewer_url(latest["key"], group=item["id"]), item["count"])
+        for item in latest["groups"]
+    )
+    group_links = "".join(
+        '<li class="group-entry"><a href="{}">{}</a><span>{} 篇</span><ul class="group-cats">{}</ul></li>'.format(
+            html.escape(reviewer_url(latest["key"], group=item["id"]), quote=True),
+            html.escape(str(item["label"])),
+            int(item["count"]),
+            "".join(
+                '<li><a href="{}">{}</a><span>{}</span></li>'.format(
+                    html.escape(reviewer_url(latest["key"], group=item["id"], category=cat["name"]), quote=True),
+                    html.escape(cat["name"]), int(cat["count"]),
+                )
+                for cat in latest.get("groupCategories", {}).get(str(item["id"]), [])
+            ),
+        )
         for item in latest["groups"]
     )
     return {"months": month_links, "categories": category_links, "groups": group_links}

@@ -38,6 +38,11 @@ class MonthlyHomeDataTests(unittest.TestCase):
         self.assertEqual(october["groups"], [{"id": 0, "label": "未指定組別", "count": 1}, {"id": 1, "label": "第 1 組", "count": 1}])
         self.assertEqual(october["categories"], [{"name": "剪影", "count": 1}, {"name": "待分類", "count": 1}])
         self.assertNotIn("paragraphs", october)
+        self.assertEqual(october["groupCategories"]["1"], [{"name": "剪影", "count": 1}])
+
+    def test_group_directory_nests_category_links_under_each_group(self):
+        nav = home_navigation_html(summarize_months(self.months))
+        self.assertIn('href="month.html?month=2026-10&amp;group=1&amp;category=%E5%89%AA%E5%BD%B1"', nav["groups"])
 
     def test_reviewer_routes_preserve_month_and_filters(self):
         self.assertEqual(reviewer_url("2026-09"), "month.html?month=2026-09")

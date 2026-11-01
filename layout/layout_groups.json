@@ -1,0 +1,604 @@
+{
+  "meta": {
+    "title": "文宣群島物理配置規格 v1（三島等邊）",
+    "reference": "https://puma.taipei/heart-island（手感；結構為三組主島等邊三角＋邊緣橋）",
+    "repo": "prorockex/monthly-publicity-manuscripts-2026@feat/3d-island-drive-import",
+    "bridge_rule": "d=normalize(B−A)_xz; A'=A+d·rA; B'=B−d·rB"
+  },
+  "islands": {
+    "group1": {
+      "label": "第 1 組",
+      "groupId": 1,
+      "role": "main",
+      "c": [
+        0.0,
+        0.9,
+        7.275
+      ],
+      "r": 5.3
+    },
+    "group2": {
+      "label": "第 2 組",
+      "groupId": 2,
+      "role": "main",
+      "c": [
+        6.3,
+        0.9,
+        -3.637
+      ],
+      "r": 5.2
+    },
+    "group3": {
+      "label": "第 3 組",
+      "groupId": 3,
+      "role": "main",
+      "c": [
+        -6.3,
+        0.9,
+        -3.637
+      ],
+      "r": 5.25
+    }
+  },
+  "facilities": {
+    "group1": [
+      {
+        "id": "group1/文稿",
+        "name": "文稿",
+        "local_xz": [
+          4.007,
+          1.936
+        ],
+        "world": [
+          4.007,
+          0.9,
+          9.211
+        ],
+        "filter": {
+          "group": 1,
+          "category": "文稿"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group1/剪影",
+        "name": "剪影",
+        "local_xz": [
+          -0.603,
+          4.409
+        ],
+        "world": [
+          -0.603,
+          0.9,
+          11.684
+        ],
+        "filter": {
+          "group": 1,
+          "category": "剪影"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group1/詩詞",
+        "name": "詩詞",
+        "local_xz": [
+          -4.379,
+          0.789
+        ],
+        "world": [
+          -4.379,
+          0.9,
+          8.064
+        ],
+        "filter": {
+          "group": 1,
+          "category": "詩詞"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group1/親子園地",
+        "name": "親子園地",
+        "local_xz": [
+          -2.104,
+          -3.921
+        ],
+        "world": [
+          -2.104,
+          0.9,
+          3.354
+        ],
+        "filter": {
+          "group": 1,
+          "category": "親子園地"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group1/封底",
+        "name": "封底",
+        "local_xz": [
+          3.079,
+          -3.213
+        ],
+        "world": [
+          3.079,
+          0.9,
+          4.062
+        ],
+        "filter": {
+          "group": 1,
+          "category": "封底"
+        },
+        "footprint_r": 0.55
+      }
+    ],
+    "group2": [
+      {
+        "id": "group2/文稿",
+        "name": "文稿",
+        "local_xz": [
+          3.463,
+          2.633
+        ],
+        "world": [
+          9.763,
+          0.9,
+          -1.004
+        ],
+        "filter": {
+          "group": 2,
+          "category": "文稿"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group2/剪影",
+        "name": "剪影",
+        "local_xz": [
+          -1.434,
+          4.107
+        ],
+        "world": [
+          4.866,
+          0.9,
+          0.47
+        ],
+        "filter": {
+          "group": 2,
+          "category": "剪影"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group2/詩詞",
+        "name": "詩詞",
+        "local_xz": [
+          -4.349,
+          -0.094
+        ],
+        "world": [
+          1.951,
+          0.9,
+          -3.731
+        ],
+        "filter": {
+          "group": 2,
+          "category": "詩詞"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group2/親子園地",
+        "name": "親子園地",
+        "local_xz": [
+          -1.254,
+          -4.165
+        ],
+        "world": [
+          5.046,
+          0.9,
+          -7.802
+        ],
+        "filter": {
+          "group": 2,
+          "category": "親子園地"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group2/封底",
+        "name": "封底",
+        "local_xz": [
+          3.574,
+          -2.48
+        ],
+        "world": [
+          9.874,
+          0.9,
+          -6.117
+        ],
+        "filter": {
+          "group": 2,
+          "category": "封底"
+        },
+        "footprint_r": 0.55
+      }
+    ],
+    "group3": [
+      {
+        "id": "group3/文稿",
+        "name": "文稿",
+        "local_xz": [
+          2.904,
+          3.306
+        ],
+        "world": [
+          -3.396,
+          0.9,
+          -0.331
+        ],
+        "filter": {
+          "group": 3,
+          "category": "文稿"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group3/剪影",
+        "name": "剪影",
+        "local_xz": [
+          -2.246,
+          3.783
+        ],
+        "world": [
+          -8.546,
+          0.9,
+          0.146
+        ],
+        "filter": {
+          "group": 3,
+          "category": "剪影"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group3/詩詞",
+        "name": "詩詞",
+        "local_xz": [
+          -4.292,
+          -0.967
+        ],
+        "world": [
+          -10.592,
+          0.9,
+          -4.604
+        ],
+        "filter": {
+          "group": 3,
+          "category": "詩詞"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group3/親子園地",
+        "name": "親子園地",
+        "local_xz": [
+          -0.406,
+          -4.381
+        ],
+        "world": [
+          -6.706,
+          0.9,
+          -8.018
+        ],
+        "filter": {
+          "group": 3,
+          "category": "親子園地"
+        },
+        "footprint_r": 0.55
+      },
+      {
+        "id": "group3/封底",
+        "name": "封底",
+        "local_xz": [
+          4.041,
+          -1.74
+        ],
+        "world": [
+          -2.259,
+          0.9,
+          -5.377
+        ],
+        "filter": {
+          "group": 3,
+          "category": "封底"
+        },
+        "footprint_r": 0.55
+      }
+    ]
+  },
+  "bridges": [
+    {
+      "id": "group1~group2",
+      "a": "group1",
+      "b": "group2",
+      "p0": [
+        2.65,
+        0.9,
+        2.6851
+      ],
+      "p1": [
+        3.7,
+        0.9,
+        0.8663
+      ],
+      "d": [
+        0.5,
+        0.0,
+        -0.866
+      ],
+      "len": 2.1001,
+      "gap": 2.1001,
+      "center_dist": 12.6001,
+      "endpoint_err": [
+        3e-05,
+        2.8e-05
+      ]
+    },
+    {
+      "id": "group2~group3",
+      "a": "group2",
+      "b": "group3",
+      "p0": [
+        1.1,
+        0.9,
+        -3.637
+      ],
+      "p1": [
+        -1.05,
+        0.9,
+        -3.637
+      ],
+      "d": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "len": 2.15,
+      "gap": 2.15,
+      "center_dist": 12.6,
+      "endpoint_err": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "id": "group3~group1",
+      "a": "group3",
+      "b": "group1",
+      "p0": [
+        -3.675,
+        0.9,
+        0.9096
+      ],
+      "p1": [
+        -2.65,
+        0.9,
+        2.6851
+      ],
+      "d": [
+        0.5,
+        0.0,
+        0.866
+      ],
+      "len": 2.0501,
+      "gap": 2.0501,
+      "center_dist": 12.6001,
+      "endpoint_err": [
+        2.9e-05,
+        3e-05
+      ]
+    }
+  ],
+  "npcs": {
+    "巴哥": {
+      "height": 1.15,
+      "foot_radius": 0.35,
+      "home": {
+        "island": "group1",
+        "xyz": [
+          1.403,
+          0.9,
+          5.83
+        ]
+      },
+      "path": [
+        {
+          "xyz": [
+            1.403,
+            0.9,
+            5.83
+          ],
+          "surface": "island:group1",
+          "note": "站位"
+        },
+        {
+          "xyz": [
+            2.65,
+            0.9,
+            2.6851
+          ],
+          "surface": "island:group1",
+          "note": "上橋→第2組"
+        },
+        {
+          "xyz": [
+            3.175,
+            0.9,
+            1.7757
+          ],
+          "surface": "bridge:group1~group2",
+          "note": "橋中線"
+        },
+        {
+          "xyz": [
+            3.7,
+            0.9,
+            0.8663
+          ],
+          "surface": "island:group2",
+          "note": "下橋"
+        },
+        {
+          "xyz": [
+            8.728,
+            0.9,
+            -1.791
+          ],
+          "surface": "island:group2",
+          "note": "文稿設施旁"
+        },
+        {
+          "xyz": [
+            6.3,
+            0.9,
+            -3.637
+          ],
+          "surface": "island:group2",
+          "note": "第2組島心"
+        }
+      ]
+    },
+    "澄瑛": {
+      "height": 1.1,
+      "foot_radius": 0.32,
+      "home": {
+        "island": "group3",
+        "xyz": [
+          -5.395,
+          0.9,
+          -1.859
+        ]
+      },
+      "path": [
+        {
+          "xyz": [
+            -5.395,
+            0.9,
+            -1.859
+          ],
+          "surface": "island:group3",
+          "note": "站位"
+        },
+        {
+          "xyz": [
+            -3.675,
+            0.9,
+            0.9096
+          ],
+          "surface": "island:group3",
+          "note": "上橋→第1組"
+        },
+        {
+          "xyz": [
+            -3.1625,
+            0.9,
+            1.7973
+          ],
+          "surface": "bridge:group3~group1",
+          "note": "橋中線"
+        },
+        {
+          "xyz": [
+            -2.65,
+            0.9,
+            2.6851
+          ],
+          "surface": "island:group1",
+          "note": "下橋"
+        },
+        {
+          "xyz": [
+            -0.431,
+            0.9,
+            10.426
+          ],
+          "surface": "island:group1",
+          "note": "剪影設施旁"
+        },
+        {
+          "xyz": [
+            -0.838,
+            0.9,
+            9.106
+          ],
+          "surface": "island:group1",
+          "note": "第1組另一側站位"
+        }
+      ]
+    }
+  },
+  "camera": {
+    "fov": 42,
+    "home": [
+      0,
+      19.5,
+      24.5
+    ],
+    "target": [
+      0,
+      0.9,
+      0
+    ],
+    "minDistance": 12,
+    "maxDistance": 44,
+    "minPolarAngle": 0.35,
+    "maxPolarAngle": 1.25,
+    "note": "斜俯瞰；group1 在 +Z 近鏡頭"
+  },
+  "implementation_notes": [
+    "刪除月份環 ringRadius／addBridge(angle,distance)",
+    "三島用 islands[].c/r；三橋用 bridges[].p0/p1",
+    "類別建築 local_xz 已保證 center+0.55≤r",
+    "巴哥／澄瑛只走島面與橋中線；站位避開設施 footprint",
+    "點島→month.html?group=N；點設施→month.html?group=N&category=名稱"
+  ],
+  "acceptance": {
+    "equilateral_sides": {
+      "group1~group2": 12.6001,
+      "group2~group3": 12.6,
+      "group3~group1": 12.6001
+    },
+    "side_spread": 0.0001,
+    "min_gap": 2.0501,
+    "gaps": [
+      {
+        "a": "group3",
+        "b": "group1",
+        "gap": 2.05,
+        "L": 12.6
+      },
+      {
+        "a": "group1",
+        "b": "group2",
+        "gap": 2.1,
+        "L": 12.6
+      },
+      {
+        "a": "group2",
+        "b": "group3",
+        "gap": 2.15,
+        "L": 12.6
+      }
+    ],
+    "max_endpoint_err": 3e-05,
+    "facilities_inside_rim": true,
+    "third_island_ok": true,
+    "third_notes": [],
+    "path_ok": true,
+    "path_notes": [],
+    "ALL_PASS": true
+  },
+  "why": "三組主島心成等邊三角並以邊緣橋互連；設施不超出島緣；島民路徑只踩島面與橋中線且不穿模。"
+}
