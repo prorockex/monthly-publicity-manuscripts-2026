@@ -359,7 +359,7 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
       targets.push(m);
     }
     selectableRoots.add(root);
-    root.add(makeLabel(`第 ${id} 組`, `${groupCount(id)} 篇 · ${latest.month} 月`, route, { x: 0, y: 3.9, z: 0 }, "group-label"));
+    root.add(makeLabel(`第 ${id} 組`, `${groupCount(id)} 篇 · ${latest.month} 月`, route, { x: 0, y: 4.35, z: 0 }, "group-label"));
 
     // 類別建築：避開朝中心（橋）的 120° 扇區，排在外側 200° 弧上
     let cats = Array.isArray(latestGroupCats[String(id)]) ? latestGroupCats[String(id)] : [];
@@ -370,7 +370,7 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
       const a = cats.length === 1 ? outward : outward - span / 2 + (span * i) / (cats.length - 1);
       const local = { x: Math.cos(a) * LAYOUT.buildingRing, z: Math.sin(a) * LAYOUT.buildingRing };
       const detail = cat.count === null || cat.count === undefined ? "" : `${cat.count} 篇`;
-      addBuilding(root, local.x, local.z, cat.name.length > 5 ? cat.name.slice(0, 5) + "…" : cat.name, reviewURL(latest.key, { group: id, category: cat.name }), categoryColors[cat.name] || "#777f6d", 0.62, detail, (i % 3) * 0.32, cat.name);
+      addBuilding(root, local.x, local.z, cat.name.length > 4 ? cat.name.slice(0, 4) + "…" : cat.name, reviewURL(latest.key, { group: id, category: cat.name }), categoryColors[cat.name] || "#777f6d", 0.62, detail, 0.18 + (i % 5) * 0.28, cat.name);
     });
     decorateIsland(root, id, outward, cats);
     return root;
