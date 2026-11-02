@@ -61,7 +61,10 @@ export function mountClassicIsland(env) {
   labelRenderer.domElement.style.pointerEvents = "none";
   labelHost.appendChild(labelRenderer.domElement);
 
-  scene.add(new THREE.HemisphereLight("#fff8f4", "#c5b5a7", 1.9));
+  const hemi = new THREE.HemisphereLight("#fff8f4", "#c5b5a7", 1.9);
+  scene.add(hemi);
+  const ambient = new THREE.AmbientLight("#ffc090", 0);
+  scene.add(ambient);
   const fill = new THREE.DirectionalLight("#cfe4f2", 0.9);
   fill.position.set(12, 8, -10);
   scene.add(fill);
@@ -76,11 +79,29 @@ export function mountClassicIsland(env) {
   sun.shadow.bias = -0.00035;
   scene.add(sun);
 
+  const skyMat = new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    depthWrite: false,
+    toneMapped: false,
+    uniforms: {
+      top: { value: new THREE.Vector3(197 / 255, 223 / 255, 240 / 255) },
+      mid: { value: new THREE.Vector3(232 / 255, 242 / 255, 247 / 255) },
+      bottom: { value: new THREE.Vector3(243 / 255, 235 / 255, 227 / 255) },
+      resolution: { value: new THREE.Vector2(1, 1) }
+    },
+    vertexShader: "void main(){ gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: "uniform vec3 top; uniform vec3 mid; uniform vec3 bottom; uniform vec2 resolution; void main(){ float y = clamp(gl_FragCoord.y / max(resolution.y, 1.0), 0.0, 1.0); vec3 col = y < 0.5 ? mix(bottom, mid, y * 2.0) : mix(mid, top, (y - 0.5) * 2.0); gl_FragColor = vec4(col, 1.0); }"
+  });
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(180, 28, 18), skyMat);
+  sky.frustumCulled = false;
+  sky.renderOrder = -10;
+  scene.add(sky);
+
   const water = new THREE.Mesh(
-    new THREE.PlaneGeometry(120, 120),
-    new THREE.MeshStandardMaterial({ color: "#45abbb", roughness: 0.8, metalness: 0 })
+    new THREE.CircleGeometry(42, 80),
+    new THREE.MeshStandardMaterial({ color: "#45abbb", roughness: 0.8, metalness: 0, emissive: "#45abbb", emissiveIntensity: 0 })
   );
-  const shallows = new THREE.Mesh(new THREE.CircleGeometry(15, 48), new THREE.MeshStandardMaterial({ color: "#8fd3da", roughness: 0.8, metalness: 0, transparent: true, opacity: 0.7 }));
+  const shallows = new THREE.Mesh(new THREE.CircleGeometry(15, 48), new THREE.MeshStandardMaterial({ color: "#8fd3da", roughness: 0.8, metalness: 0, transparent: true, opacity: 0.7, emissive: "#8fd3da", emissiveIntensity: 0 }));
   shallows.rotation.x = -Math.PI / 2;
   shallows.position.y = -0.12;
   world.add(shallows);
@@ -91,6 +112,11 @@ export function mountClassicIsland(env) {
 
   const targets = [];
   const selectableRoots = new Set();
+  const windowMats = [];
+  const bridgeLanterns = [];
+  const lamps = [];
+  const shallowMats = [];
+  shallowMats.push(shallows.material);
   const palette = {
     land: ["#e6d8c8", "#d3c4aa", "#f4ece4"],
     soil: ["#c5b5a7", "#b8a07e", "#c5b5a7", "#b8a07e"],
@@ -165,8 +191,10 @@ export function mountClassicIsland(env) {
     door.position.set(0, 0.28 * scale, 0.33 * scale);
     building.add(door);
     for (const side of [-1, 1]) {
-      const windowMesh = mesh(new THREE.BoxGeometry(0.13 * scale, 0.14 * scale, 0.04 * scale), "#8fd3da", { roughness: 0.6 });
+      const windowMesh = mesh(new THREE.BoxGeometry(0.13 * scale, 0.14 * scale, 0.04 * scale), "#8fd3da", { roughness: 0.6, emissive: "#fcea8b", emissiveIntensity: 0 });
       windowMesh.position.set(side * 0.22 * scale, 0.64 * scale, 0.33 * scale);
+      windowMesh.material.userData.todManaged = true;
+      windowMats.push(windowMesh.material);
       building.add(windowMesh);
     }
     const eave = mesh(new THREE.BoxGeometry(0.86 * scale, 0.06 * scale, 0.76 * scale), "#f4ebdd");
@@ -254,8 +282,8 @@ export function mountClassicIsland(env) {
     const pol = (a, d) => ({ x: Math.cos(a) * d, z: Math.sin(a) * d });
     const seed = (n) => { const v = Math.sin(id * 91.7 + n * 12.9) * 43758.5; return v - Math.floor(v); };
     // 淺水環
-    const shallow = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.32, r * 1.32, 0.04, 28), material("#8fd3da", { transparent: true, opacity: 0.7 }));
-    shallow.position.y = 0.06; shallow.receiveShadow = true; root.add(shallow);
+    const shallow = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.32, r * 1.32, 0.04, 28), material("#8fd3da", { transparent: true, opacity: 0.7, emissive: "#8fd3da", emissiveIntensity: 0 }));
+    shallow.position.y = 0.06; shallow.receiveShadow = true; shallowMats.push(shallow.material); root.add(shallow);
     // 不規則凸角
     for (let i = 0; i < 7; i += 1) {
       const p = pol(outward + i * 0.9 + seed(i), r * (0.9 + seed(i + 3) * 0.12));
@@ -386,7 +414,10 @@ export function mountClassicIsland(env) {
       const pole = mesh(new THREE.CylinderGeometry(0.03, 0.035, 0.75, 5), "#211d1d");
       pole.position.set(side * length * 0.25, 0.42, side * 0.38); bridge.add(pole);
       const lantern = mesh(new THREE.BoxGeometry(0.14, 0.16, 0.14), "#fcea8b", { emissive: "#fcea8b", emissiveIntensity: 0.5 });
-      lantern.position.set(side * length * 0.25, 0.86, side * 0.38); bridge.add(lantern);
+      lantern.position.set(side * length * 0.25, 0.86, side * 0.38);
+      lantern.material.userData.todManaged = true;
+      bridgeLanterns.push(lantern.material);
+      bridge.add(lantern);
     }
     return { start, end };
   }
@@ -462,6 +493,32 @@ export function mountClassicIsland(env) {
     }
   });
   world.userData.bridges = bridges;
+
+  function makeSeaLamp(x, z) {
+    const lamp = new THREE.Group();
+    lamp.position.set(x, 2.55, z);
+    const pole = mesh(new THREE.CylinderGeometry(0.045, 0.058, 1.45, 6), "#b8a07e");
+    pole.position.y = -0.86;
+    const shade = mesh(new THREE.SphereGeometry(0.14, 8, 6), "#fff8f4", { emissive: "#ffe0a8", emissiveIntensity: 0.15, roughness: 0.55 });
+    shade.scale.set(1, 0.78, 1);
+    shade.material.userData.todManaged = true;
+    const cap = mesh(new THREE.ConeGeometry(0.11, 0.09, 6), "#db6a41");
+    cap.position.y = 0.12;
+    lamp.add(pole, shade, cap);
+    const light = new THREE.PointLight("#ffb978", 0, 5.5, 2);
+    light.castShadow = false;
+    lamp.add(light);
+    world.add(lamp);
+    lamp.traverse((obj) => { obj.raycast = () => {}; });
+    lamps.push({ light, shade: shade.material });
+  }
+  groupIds.forEach((id) => {
+    const center = islandCenters[id];
+    for (const delta of [-0.62, 0.62]) {
+      const angle = center.angle + delta;
+      makeSeaLamp(center.x + Math.cos(angle) * 2.55, center.z + Math.sin(angle) * 2.55);
+    }
+  });
 
   // ── 外圈遊輪：低多邊形玩具船，對向巡航，不進 raycast、無名牌 ──
   // 島群外緣（淺水）約 12.5、最外浮標約 13.0。規格帶 13.2–13.8 寬只有 0.6，容不下船寬 1.11 的對向交會，
@@ -643,6 +700,7 @@ export function mountClassicIsland(env) {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height, false);
+    skyMat.uniforms.resolution.value.set(renderer.domElement.width, renderer.domElement.height);
     labelRenderer.setSize(width, height);
     const distance = viewDistance(width);
     camera.position.set(0, distance * 0.82, distance * 0.58);
@@ -680,7 +738,7 @@ export function mountClassicIsland(env) {
       if (!child.isMesh) return;
       const list = Array.isArray(child.material) ? child.material : [child.material];
       for (const mat of list) {
-        if (!mat || !mat.emissive) continue;
+        if (!mat || !mat.emissive || mat.userData.todManaged) continue;
         const original = mat.userData.originalEmissive || 0;
         mat.emissive.setHex(enabled ? 0x473b15 : original);
       }
@@ -733,6 +791,156 @@ export function mountClassicIsland(env) {
     controls.autoRotate = false;
     syncRotateButton();
   }
+  const SEA_PERIODS = {
+    day: {
+      sky: ["#c5dff0", "#e8f2f7", "#f3ebe3"],
+      fog: "#edddcf", fogNear: 48, fogFar: 110,
+      hemiSky: "#fff8f4", hemiGround: "#c5b5a7", hemiI: 1.9,
+      sun: "#ffe9cf", sunI: 3.0, sunPos: [-8, 18, 12], castShadow: true,
+      fill: "#cfe4f2", fillI: 0.9, fillPos: [12, 8, -10],
+      amb: "#ffc090", ambI: 0, exposure: 1.0,
+      sea: "#45abbb", seaEmissive: 0, shallow: "#8fd3da", shallowOp: 0.7,
+      win: 0, lantern: 0.5, lampI: 0, lampColor: "#ffb978", bulbE: 0.15
+    },
+    dusk: {
+      sky: ["#7a9ec4", "#c9a48a", "#e8b89a"],
+      fog: "#d9a882", fogNear: 40, fogFar: 95,
+      hemiSky: "#f5c49a", hemiGround: "#8a6a55", hemiI: 1.1,
+      sun: "#ff9a5c", sunI: 1.35, sunPos: [-14, 6, 8], castShadow: true,
+      fill: "#6a7ea0", fillI: 0.45, fillPos: [10, 5, -12],
+      amb: "#ffc090", ambI: 0.15, exposure: 0.92,
+      sea: "#3f6f86", seaEmissive: 0.35, shallow: "#c9a48a", shallowOp: 0.55,
+      win: 0.15, lantern: 1.2, lampI: 0.55, lampColor: "#ffb978", bulbE: 0.9
+    },
+    night: {
+      sky: ["#1e2a3a", "#2a3545", "#3a3340"],
+      fog: "#121820", fogNear: 35, fogFar: 85,
+      hemiSky: "#2a3550", hemiGround: "#0e1218", hemiI: 0.35,
+      sun: "#a8c0e8", sunI: 0.22, sunPos: [6, 22, -10], castShadow: false,
+      fill: "#3a4560", fillI: 0.18, fillPos: [-10, 8, 6],
+      amb: "#1e2838", ambI: 0.08, exposure: 0.85,
+      sea: "#1c3344", seaEmissive: 0.55, shallow: "#2a4558", shallowOp: 0.5,
+      win: 0.45, lantern: 2.0, lampI: 1.6, lampColor: "#ffd6a0", bulbE: 1.8
+    }
+  };
+  const mixA = new THREE.Color();
+  const mixB = new THREE.Color();
+  const srgbA = new THREE.Vector3();
+  const srgbB = new THREE.Vector3();
+  const mixNum = (a, b, t) => a + (b - a) * t;
+  const smooth = (t) => { const x = Math.min(1, Math.max(0, t)); return x * x * (3 - 2 * x); };
+  function mixHex(out, a, b, t) { mixA.set(a); mixB.set(b); out.copy(mixA).lerp(mixB, t); }
+  function srgbVec(hex, out) {
+    const n = parseInt(String(hex).replace("#", ""), 16);
+    return out.set(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
+  }
+  function mixSrgb(out, a, b, t) {
+    srgbVec(a, srgbA);
+    srgbVec(b, srgbB);
+    out.copy(srgbA).lerp(srgbB, t);
+  }
+  function vecToHex(v) {
+    const byte = (n) => Math.round(Math.min(255, Math.max(0, n * 255))).toString(16).padStart(2, "0");
+    return `#${byte(v.x)}${byte(v.y)}${byte(v.z)}`;
+  }
+  function applySeaTod(from, to, sceneT, lampTOf) {
+    mixSrgb(skyMat.uniforms.top.value, from.sky[0], to.sky[0], sceneT);
+    mixSrgb(skyMat.uniforms.mid.value, from.sky[1], to.sky[1], sceneT);
+    mixSrgb(skyMat.uniforms.bottom.value, from.sky[2], to.sky[2], sceneT);
+    mixHex(scene.background, from.sky[2], to.sky[2], sceneT);
+    mixHex(scene.fog.color, from.fog, to.fog, sceneT);
+    scene.fog.near = mixNum(from.fogNear, to.fogNear, sceneT);
+    scene.fog.far = mixNum(from.fogFar, to.fogFar, sceneT);
+    mixHex(hemi.color, from.hemiSky, to.hemiSky, sceneT);
+    mixHex(hemi.groundColor, from.hemiGround, to.hemiGround, sceneT);
+    hemi.intensity = mixNum(from.hemiI, to.hemiI, sceneT);
+    mixHex(sun.color, from.sun, to.sun, sceneT);
+    sun.intensity = mixNum(from.sunI, to.sunI, sceneT);
+    sun.position.set(
+      mixNum(from.sunPos[0], to.sunPos[0], sceneT),
+      mixNum(from.sunPos[1], to.sunPos[1], sceneT),
+      mixNum(from.sunPos[2], to.sunPos[2], sceneT)
+    );
+    sun.castShadow = sceneT < 0.5 ? from.castShadow : to.castShadow;
+    mixHex(fill.color, from.fill, to.fill, sceneT);
+    fill.intensity = mixNum(from.fillI, to.fillI, sceneT);
+    fill.position.set(
+      mixNum(from.fillPos[0], to.fillPos[0], sceneT),
+      mixNum(from.fillPos[1], to.fillPos[1], sceneT),
+      mixNum(from.fillPos[2], to.fillPos[2], sceneT)
+    );
+    mixHex(ambient.color, from.amb, to.amb, sceneT);
+    ambient.intensity = mixNum(from.ambI, to.ambI, sceneT);
+    renderer.toneMappingExposure = mixNum(from.exposure, to.exposure, sceneT);
+    mixHex(water.material.color, from.sea, to.sea, sceneT);
+    mixHex(water.material.emissive, from.sea, to.sea, sceneT);
+    water.material.emissiveIntensity = mixNum(from.seaEmissive, to.seaEmissive, sceneT);
+    shallowMats.forEach((mat) => {
+      mixHex(mat.color, from.shallow, to.shallow, sceneT);
+      if (mat.emissive) mixHex(mat.emissive, from.shallow, to.shallow, sceneT);
+      if (mat.emissive) mat.emissiveIntensity = mixNum(from.seaEmissive * 0.45, to.seaEmissive * 0.45, sceneT);
+      mat.opacity = mixNum(from.shallowOp, to.shallowOp, sceneT);
+    });
+    const winI = mixNum(from.win, to.win, sceneT);
+    windowMats.forEach((mat) => { mat.emissive.set("#fcea8b"); mat.emissiveIntensity = winI; });
+    const lanternI = mixNum(from.lantern, to.lantern, sceneT);
+    bridgeLanterns.forEach((mat) => { mat.emissive.set("#fcea8b"); mat.emissiveIntensity = lanternI; });
+    lamps.forEach((lamp, index) => {
+      const lt = lampTOf(index);
+      const src = from.lamps && from.lamps[index];
+      lamp.light.intensity = mixNum(src ? src.intensity : from.lampI, to.lampI, lt);
+      mixHex(lamp.light.color, src ? src.color : from.lampColor, to.lampColor, lt);
+      lamp.shade.emissive.set("#ffe0a8");
+      lamp.shade.emissiveIntensity = mixNum(src ? src.emissive : from.bulbE, to.bulbE, lt);
+    });
+  }
+  function readSeaTod() {
+    return {
+      sky: [vecToHex(skyMat.uniforms.top.value), vecToHex(skyMat.uniforms.mid.value), vecToHex(skyMat.uniforms.bottom.value)],
+      fog: "#" + scene.fog.color.getHexString(), fogNear: scene.fog.near, fogFar: scene.fog.far,
+      hemiSky: "#" + hemi.color.getHexString(), hemiGround: "#" + hemi.groundColor.getHexString(), hemiI: hemi.intensity,
+      sun: "#" + sun.color.getHexString(), sunI: sun.intensity, sunPos: [sun.position.x, sun.position.y, sun.position.z], castShadow: sun.castShadow,
+      fill: "#" + fill.color.getHexString(), fillI: fill.intensity, fillPos: [fill.position.x, fill.position.y, fill.position.z],
+      amb: "#" + ambient.color.getHexString(), ambI: ambient.intensity, exposure: renderer.toneMappingExposure,
+      sea: "#" + water.material.color.getHexString(),
+      seaEmissive: water.material.emissiveIntensity,
+      shallow: shallowMats.length ? "#" + shallowMats[0].color.getHexString() : "#8fd3da",
+      shallowOp: shallowMats.length ? shallowMats[0].opacity : 0.7,
+      win: windowMats.length ? windowMats[0].emissiveIntensity : 0,
+      lantern: bridgeLanterns.length ? bridgeLanterns[0].emissiveIntensity : 0.5,
+      lampI: lamps.length ? lamps[0].light.intensity : 0,
+      lampColor: lamps.length ? "#" + lamps[0].light.color.getHexString() : "#ffb978",
+      bulbE: lamps.length ? lamps[0].shade.emissiveIntensity : 0.15,
+      lamps: lamps.map((lamp) => ({ intensity: lamp.light.intensity, color: "#" + lamp.light.color.getHexString(), emissive: lamp.shade.emissiveIntensity }))
+    };
+  }
+  function readStoredTod() {
+    try {
+      const value = localStorage.getItem("homeSkyTod");
+      if (value === "dusk" || value === "night") return value;
+    } catch (_) {}
+    return "day";
+  }
+  let todKey = readStoredTod();
+  let todAnim = null;
+  function beginSeaTod(next) {
+    if (next !== "day" && next !== "dusk" && next !== "night") return;
+    if (next === todKey && !todAnim) return;
+    const from = readSeaTod();
+    todKey = next;
+    document.body.classList.remove("tod-day", "tod-dusk", "tod-night");
+    document.body.classList.add(`tod-${next}`);
+    if (reducedMotion) {
+      applySeaTod(from, SEA_PERIODS[next], 1, () => 1);
+      todAnim = null;
+      return;
+    }
+    todAnim = { from, to: SEA_PERIODS[next], t0: performance.now() };
+  }
+  applySeaTod(SEA_PERIODS[todKey], SEA_PERIODS[todKey], 1, () => 1);
+  function onClassicTod(event) { beginSeaTod(event.detail); }
+  window.addEventListener("home-sky-tod", onClassicTod);
+
   status.hidden = true;
   let animationId = 0;
   let disposed = false;
@@ -747,6 +955,17 @@ export function mountClassicIsland(env) {
       controls.target.lerpVectors(flight.fromTarget, flight.toTarget, e);
       if (k >= 1) { const r = flight.route; flight = null; location.href = r; }
     }
+    if (todAnim) {
+      const elapsed = (now - todAnim.t0) / 1000;
+      const sceneT = smooth(Math.min(1, elapsed / 0.45));
+      const lampT = (index) => smooth(Math.min(1, Math.max(0, (elapsed - index * 0.1) / 0.8)));
+      applySeaTod(todAnim.from, todAnim.to, sceneT, lampT);
+      if (elapsed >= 0.8 + Math.max(0, lamps.length - 1) * 0.1) {
+        applySeaTod(todAnim.from, todAnim.to, 1, () => 1);
+        todAnim = null;
+      }
+    }
+    sky.position.copy(camera.position);
     if (!reducedMotion) {
       const t = now / 1000;
       residents.forEach((res) => placeResident(res, t));
@@ -774,6 +993,7 @@ export function mountClassicIsland(env) {
     window.cancelAnimationFrame(animationId);
     if (resizeObserver) resizeObserver.disconnect();
     window.removeEventListener("resize", resize);
+    window.removeEventListener("home-sky-tod", onClassicTod);
     rotateButton.removeEventListener("click", onRotateClick);
     resetButton.removeEventListener("click", onResetClick);
     controls.dispose();

@@ -11,7 +11,7 @@ import { mountSkyIsland } from "./island_sky.js";
   const sceneNote = document.getElementById("sceneNote");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const NOTES = {
-    classic: "滑鼠／觸控拖曳旋轉，滾輪或雙指縮放。外海兩艘遊輪只是風景，不能點選。組別、類別與月份請用文稿導覽。",
+    classic: "滑鼠／觸控拖曳旋轉，滾輪或雙指縮放。外海兩艘遊輪只是風景，不能點選。可切換白天、傍晚、夜晚。組別、類別與月份請用文稿導覽。",
     sky: "滑鼠／觸控拖曳旋轉，滾輪或雙指縮放。兩架玩具飛機只是風景，不能點選。可切換白天、傍晚、夜晚。組別、類別與月份請用文稿導覽。"
   };
 
@@ -68,14 +68,12 @@ import { mountSkyIsland } from "./island_sky.js";
     document.body.classList.toggle("edition-classic", edition === "classic");
     document.body.classList.toggle("edition-sky", edition === "sky");
     document.body.classList.remove("tod-day", "tod-dusk", "tod-night");
-    if (edition === "sky") {
-      let tod = "day";
-      try {
-        const stored = localStorage.getItem("homeSkyTod");
-        if (stored === "dusk" || stored === "night") tod = stored;
-      } catch (_) {}
-      document.body.classList.add(`tod-${tod}`);
-    }
+    let tod = "day";
+    try {
+      const stored = localStorage.getItem("homeSkyTod");
+      if (stored === "dusk" || stored === "night") tod = stored;
+    } catch (_) {}
+    document.body.classList.add(`tod-${tod}`);
     if (sceneNote) sceneNote.textContent = NOTES[edition];
     document.querySelectorAll(".edition-switch [data-edition]").forEach((button) => {
       button.setAttribute("aria-checked", button.getAttribute("data-edition") === edition ? "true" : "false");
