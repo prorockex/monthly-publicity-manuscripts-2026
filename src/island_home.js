@@ -116,16 +116,17 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
   sun.shadow.camera.updateProjectionMatrix();
 
   const skyMat = new THREE.ShaderMaterial({
-    side: THREE.BackSide,
+    side: THREE.DoubleSide,
     depthWrite: false,
     toneMapped: false,
     uniforms: {
-      top: { value: new THREE.Color("#c5dff0") },
-      mid: { value: new THREE.Color("#e8f2f7") },
-      bottom: { value: new THREE.Color("#f3ebe3") }
+      top: { value: new THREE.Vector3(197 / 255, 223 / 255, 240 / 255) },
+      mid: { value: new THREE.Vector3(232 / 255, 242 / 255, 247 / 255) },
+      bottom: { value: new THREE.Vector3(243 / 255, 235 / 255, 227 / 255) },
+      resolution: { value: new THREE.Vector2(1, 1) }
     },
-    vertexShader: "varying vec3 vPos; void main(){ vPos = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-    fragmentShader: "varying vec3 vPos; uniform vec3 top; uniform vec3 mid; uniform vec3 bottom; void main(){ float h = normalize(vPos).y * 0.5 + 0.5; vec3 col = mix(bottom, mid, smoothstep(0.06, 0.46, h)); col = mix(col, top, smoothstep(0.40, 0.92, h)); gl_FragColor = vec4(col, 1.0); }"
+    vertexShader: "void main(){ gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: "uniform vec3 top; uniform vec3 mid; uniform vec3 bottom; uniform vec2 resolution; void main(){ float y = clamp(gl_FragCoord.y / max(resolution.y, 1.0), 0.0, 1.0); vec3 col = y < 0.5 ? mix(bottom, mid, y * 2.0) : mix(mid, top, (y - 0.5) * 2.0); gl_FragColor = vec4(col, 1.0); }"
   });
   const sky = new THREE.Mesh(new THREE.SphereGeometry(180, 28, 18), skyMat);
   sky.frustumCulled = false;
@@ -622,10 +623,10 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
   const cloudSea = new THREE.Group();
   cloudSea.position.y = 0.85;
   world.add(cloudSea);
-  const seaDisc = new THREE.Mesh(new THREE.CircleGeometry(48, 40), cloudMats.disc);
+  const seaDisc = new THREE.Mesh(new THREE.CircleGeometry(48, 40), skyMat);
   seaDisc.rotation.x = -Math.PI / 2;
   seaDisc.position.y = -0.35;
-  seaDisc.receiveShadow = true;
+  seaDisc.frustumCulled = false;
   cloudSea.add(seaDisc);
   for (let i = 0; i < 16; i += 1) {
     const a = (i / 16) * Math.PI * 2 + 0.35;
@@ -844,6 +845,7 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height, false);
+    skyMat.uniforms.resolution.value.set(renderer.domElement.width, renderer.domElement.height);
     labelRenderer.setSize(width, height);
   }
   if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
@@ -971,13 +973,28 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
   };
   const mixA = new THREE.Color();
   const mixB = new THREE.Color();
+  const srgbA = new THREE.Vector3();
+  const srgbB = new THREE.Vector3();
   const mixNum = (a, b, t) => a + (b - a) * t;
   const smooth = (t) => { const x = Math.min(1, Math.max(0, t)); return x * x * (3 - 2 * x); };
   function mixHex(out, a, b, t) { mixA.set(a); mixB.set(b); out.copy(mixA).lerp(mixB, t); }
+  function srgbVec(hex, out) {
+    const n = parseInt(String(hex).replace("#", ""), 16);
+    return out.set(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
+  }
+  function mixSrgb(out, a, b, t) {
+    srgbVec(a, srgbA);
+    srgbVec(b, srgbB);
+    out.copy(srgbA).lerp(srgbB, t);
+  }
+  function vecToHex(v) {
+    const byte = (n) => Math.round(Math.min(255, Math.max(0, n * 255))).toString(16).padStart(2, "0");
+    return `#${byte(v.x)}${byte(v.y)}${byte(v.z)}`;
+  }
   function applyVisual(from, to, sceneT, lampTOf) {
-    mixHex(skyMat.uniforms.top.value, from.sky[0], to.sky[0], sceneT);
-    mixHex(skyMat.uniforms.mid.value, from.sky[1], to.sky[1], sceneT);
-    mixHex(skyMat.uniforms.bottom.value, from.sky[2], to.sky[2], sceneT);
+    mixSrgb(skyMat.uniforms.top.value, from.sky[0], to.sky[0], sceneT);
+    mixSrgb(skyMat.uniforms.mid.value, from.sky[1], to.sky[1], sceneT);
+    mixSrgb(skyMat.uniforms.bottom.value, from.sky[2], to.sky[2], sceneT);
     mixHex(scene.background, from.sky[2], to.sky[2], sceneT);
     mixHex(scene.fog.color, from.fog, to.fog, sceneT);
     scene.fog.near = mixNum(from.fogNear, to.fogNear, sceneT);
@@ -1035,7 +1052,7 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
   }
   function readBack() {
     return {
-      sky: ["#" + skyMat.uniforms.top.value.getHexString(), "#" + skyMat.uniforms.mid.value.getHexString(), "#" + skyMat.uniforms.bottom.value.getHexString()],
+      sky: [vecToHex(skyMat.uniforms.top.value), vecToHex(skyMat.uniforms.mid.value), vecToHex(skyMat.uniforms.bottom.value)],
       fog: "#" + scene.fog.color.getHexString(), fogNear: scene.fog.near, fogFar: scene.fog.far,
       hemiSky: "#" + hemi.color.getHexString(), hemiGround: "#" + hemi.groundColor.getHexString(), hemiI: hemi.intensity,
       sun: "#" + sun.color.getHexString(), sunI: sun.intensity, sunPos: [sun.position.x, sun.position.y, sun.position.z], castShadow: sun.castShadow,
