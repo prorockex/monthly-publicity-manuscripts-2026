@@ -57,7 +57,7 @@ export function mountClassicIsland(env) {
   const labelRenderer = new CSS2DRenderer();
   labelRenderer.domElement.style.position = "absolute";
   labelRenderer.domElement.style.inset = "0";
-  labelRenderer.domElement.style.overflow = "hidden";
+  labelRenderer.domElement.style.overflow = "visible";
   labelRenderer.domElement.style.pointerEvents = "none";
   labelHost.appendChild(labelRenderer.domElement);
 
@@ -510,7 +510,7 @@ export function mountClassicIsland(env) {
     lamp.add(light);
     world.add(lamp);
     lamp.traverse((obj) => { obj.raycast = () => {}; });
-    lamps.push({ light, shade: shade.material });
+    lamps.push({ light, shade: shade.material, baseDistance: 5.5 });
   }
   groupIds.forEach((id) => {
     const center = islandCenters[id];
@@ -800,7 +800,7 @@ export function mountClassicIsland(env) {
       fill: "#cfe4f2", fillI: 0.9, fillPos: [12, 8, -10],
       amb: "#ffc090", ambI: 0, exposure: 1.0,
       sea: "#45abbb", seaEmissive: 0, shallow: "#8fd3da", shallowOp: 0.7,
-      win: 0, lantern: 0.5, lampI: 0, lampColor: "#ffb978", bulbE: 0.15
+      win: 0, lantern: 0.5, lampI: 0, lampReach: 1, lampColor: "#ffb978", bulbE: 0.15
     },
     dusk: {
       sky: ["#7a9ec4", "#c9a48a", "#e8b89a"],
@@ -810,17 +810,17 @@ export function mountClassicIsland(env) {
       fill: "#6a7ea0", fillI: 0.45, fillPos: [10, 5, -12],
       amb: "#ffc090", ambI: 0.15, exposure: 0.92,
       sea: "#3f6f86", seaEmissive: 0.35, shallow: "#c9a48a", shallowOp: 0.55,
-      win: 0.15, lantern: 1.2, lampI: 0.55, lampColor: "#ffb978", bulbE: 0.9
+      win: 0.15, lantern: 1.2, lampI: 0.55, lampReach: 1.45, lampColor: "#ffb978", bulbE: 0.9
     },
     night: {
       sky: ["#1e2a3a", "#2a3545", "#3a3340"],
-      fog: "#121820", fogNear: 35, fogFar: 85,
-      hemiSky: "#2a3550", hemiGround: "#0e1218", hemiI: 0.35,
-      sun: "#a8c0e8", sunI: 0.22, sunPos: [6, 22, -10], castShadow: false,
-      fill: "#3a4560", fillI: 0.18, fillPos: [-10, 8, 6],
-      amb: "#1e2838", ambI: 0.08, exposure: 0.85,
-      sea: "#1c3344", seaEmissive: 0.55, shallow: "#2a4558", shallowOp: 0.5,
-      win: 0.45, lantern: 2.0, lampI: 1.6, lampColor: "#ffd6a0", bulbE: 1.8
+      fog: "#2c3a4e", fogNear: 58, fogFar: 150,
+      hemiSky: "#6d7fa0", hemiGround: "#3e4c62", hemiI: 1.15,
+      sun: "#c5d4ee", sunI: 0.72, sunPos: [6, 22, -10], castShadow: false,
+      fill: "#7d8eaa", fillI: 0.55, fillPos: [-10, 8, 6],
+      amb: "#516078", ambI: 0.38, exposure: 1.05,
+      sea: "#1c3344", seaEmissive: 0.42, shallow: "#2a4558", shallowOp: 0.55,
+      win: 0.7, lantern: 2.6, lampI: 5.2, lampReach: 2.6, lampColor: "#ffd6a0", bulbE: 1.8
     }
   };
   const mixA = new THREE.Color();
@@ -889,6 +889,7 @@ export function mountClassicIsland(env) {
       const lt = lampTOf(index);
       const src = from.lamps && from.lamps[index];
       lamp.light.intensity = mixNum(src ? src.intensity : from.lampI, to.lampI, lt);
+      if (lamp.baseDistance) lamp.light.distance = lamp.baseDistance * mixNum(from.lampReach || 1, to.lampReach || 1, lt);
       mixHex(lamp.light.color, src ? src.color : from.lampColor, to.lampColor, lt);
       lamp.shade.emissive.set("#ffe0a8");
       lamp.shade.emissiveIntensity = mixNum(src ? src.emissive : from.bulbE, to.bulbE, lt);
@@ -909,6 +910,7 @@ export function mountClassicIsland(env) {
       win: windowMats.length ? windowMats[0].emissiveIntensity : 0,
       lantern: bridgeLanterns.length ? bridgeLanterns[0].emissiveIntensity : 0.5,
       lampI: lamps.length ? lamps[0].light.intensity : 0,
+      lampReach: lamps.length && lamps[0].baseDistance ? lamps[0].light.distance / lamps[0].baseDistance : 1,
       lampColor: lamps.length ? "#" + lamps[0].light.color.getHexString() : "#ffb978",
       bulbE: lamps.length ? lamps[0].shade.emissiveIntensity : 0.15,
       lamps: lamps.map((lamp) => ({ intensity: lamp.light.intensity, color: "#" + lamp.light.color.getHexString(), emissive: lamp.shade.emissiveIntensity }))
@@ -976,7 +978,7 @@ export function mountClassicIsland(env) {
     const tagScale = camDist < 26 ? 1 : Math.max(0.78, 1 - (camDist - 26) / 60);
     residents.forEach((res) => { const t = res.mesh.userData.tag; if (t) { t.style.opacity = "1"; t.style.setProperty("--tag-scale", tagScale.toFixed(2)); } });
     const dist = camera.position.distanceTo(controls.target);
-    const catOpacity = dist < 34 ? "1" : dist < 42 ? "0.35" : "0";
+    const catOpacity = dist < 56 ? "1" : dist < 72 ? "0.5" : "0";
     if (catOpacity !== world.userData.catOpacity) {
       world.userData.catOpacity = catOpacity;
       document.querySelectorAll(".island-label.cat-label").forEach((el) => { el.style.opacity = catOpacity; el.style.pointerEvents = catOpacity === "0" ? "none" : "auto"; });
