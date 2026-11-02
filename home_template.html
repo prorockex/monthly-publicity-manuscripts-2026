@@ -25,10 +25,11 @@ body.rails-hidden .side-rails{display:none}
 @media(min-width:1500px) and (min-aspect-ratio:16/10){.rail{width:228px}}
 @media(min-width:1800px) and (min-aspect-ratio:16/10){.rail{width:252px}}
 @media(max-width:1279px),(max-aspect-ratio:16/10){body.mode-island.rails-hidden{height:100vh;height:100dvh;overflow:hidden}body.mode-island.rails-hidden .shell{height:100vh;height:100dvh;min-height:0}body.mode-island.rails-hidden .scene-column,body.mode-island.rails-hidden .island-stage{flex:1 1 auto;height:auto;min-height:0}body.mode-island.rails-hidden .footer{display:none}}
+body.mode-island .topbar,body.mode-island .footer{background:#fff8f4}body.tod-day{background:#f3ebe3}body.tod-dusk{background:#e8b89a}body.tod-night{background:#3a3340}body.tod-day .island-stage{background:#e8f2f7}body.tod-dusk .island-stage{background:#c9a48a}body.tod-night .island-stage{background:#2a3545}.stage-glow{background:linear-gradient(180deg,#c5dff0,#e8f2f7 46%,#f3ebe3)}body.tod-dusk .stage-glow{background:linear-gradient(180deg,#7a9ec4,#c9a48a 48%,#e8b89a)}body.tod-night .stage-glow{background:linear-gradient(180deg,#1e2a3a,#2a3545 50%,#3a3340)}body{transition:background .45s linear}.scene-controls{flex-wrap:wrap;justify-content:center;row-gap:6px;max-width:calc(100% - 24px)}.tod-switch{display:inline-flex;align-items:center;padding:2px;gap:2px;background:#fff8f4;border:1px solid #211d1d26;border-radius:999px}.tod-switch button{min-height:34px;padding:6px 10px;background:transparent;color:#211d1d;border:0;border-radius:999px;font-size:12px;font-weight:750;cursor:pointer}.tod-switch button[aria-checked="true"]{background:#211d1d;color:#fff8f4}.tod-switch button:hover{background:#db6a41;color:#fff8f4}.tod-switch button[aria-checked="true"]:hover{background:#211d1d;color:#fff8f4}body.tod-dusk .island-label{background:rgba(255,248,244,.94)}body.tod-night .island-label{background:rgba(255,248,244,.92);border-color:#211d1d33}@media(max-width:720px){.tod-switch button{min-height:32px;padding:5px 8px;font-size:11px}}@media(max-width:420px){.scene-controls{max-width:calc(100% - 18px);justify-content:flex-end}}
 </style>
 </head>
 <body class="mode-island">
-<script>try{if(localStorage.getItem("homeRails")==="closed")document.body.classList.add("rails-hidden")}catch(e){}</script>
+<script>try{if(localStorage.getItem("homeRails")==="closed")document.body.classList.add("rails-hidden")}catch(e){}try{var tod=localStorage.getItem("homeSkyTod");document.body.classList.add(tod==="dusk"||tod==="night"?"tod-"+tod:"tod-day")}catch(e){document.body.classList.add("tod-day")}</script>
 <div class="shell">
 <header class="topbar">
   <a class="brand" href="index.html" aria-label="文宣作品集首頁">
@@ -50,9 +51,10 @@ body.rails-hidden .side-rails{display:none}
       <div id="three-root" aria-hidden="true"></div>
       <div id="label-root" aria-label="島嶼與建築導覽標籤"></div>
       <div class="scene-fallback" id="sceneFallback" role="status">3D 島嶼呈現在此；若未顯示，請用文稿導覽進入審稿頁。若導覽已收合，按上方「顯示導覽」。</div>
-      <div class="scene-controls"><button id="rotateToggle" type="button" aria-pressed="false">開始旋轉</button><button id="resetView" type="button">鳥瞰</button></div>
+      <div class="scene-controls"><button id="rotateToggle" type="button" aria-pressed="false">開始旋轉</button><button id="resetView" type="button">鳥瞰</button><div class="tod-switch" role="radiogroup" aria-label="時段"><button type="button" role="radio" data-tod="day" aria-checked="true">白天</button><button type="button" role="radio" data-tod="dusk" aria-checked="false">傍晚</button><button type="button" role="radio" data-tod="night" aria-checked="false">夜晚</button></div></div>
+      <script>(function(){var key="homeSkyTod";var buttons=[].slice.call(document.querySelectorAll(".tod-switch [data-tod]"));var meta=document.querySelector('meta[name="theme-color"]');function read(){try{var v=localStorage.getItem(key);if(v==="dusk"||v==="night")return v}catch(e){}return "day"}function apply(v,persist){if(v!=="dusk"&&v!=="night")v="day";document.body.classList.remove("tod-day","tod-dusk","tod-night");document.body.classList.add("tod-"+v);buttons.forEach(function(b){b.setAttribute("aria-checked",b.getAttribute("data-tod")===v?"true":"false")});if(meta)meta.setAttribute("content",v==="night"?"#3a3340":v==="dusk"?"#e8b89a":"#f3ebe3");if(persist){try{localStorage.setItem(key,v)}catch(e){}window.dispatchEvent(new CustomEvent("home-sky-tod",{detail:v}))}}apply(read(),false);buttons.forEach(function(b){b.addEventListener("click",function(){apply(b.getAttribute("data-tod"),true)})})})();</script>
     </div>
-    <p class="scene-note visually-hidden">滑鼠／觸控拖曳旋轉，滾輪或雙指縮放。外海兩艘遊輪只是風景，不能點選。組別、類別與月份請用文稿導覽。</p>
+    <p class="scene-note visually-hidden">滑鼠／觸控拖曳旋轉，滾輪或雙指縮放。兩架玩具飛機只是風景，不能點選。可切換白天、傍晚、夜晚。組別、類別與月份請用文稿導覽。</p>
   </div>
   <nav class="side-rails" id="sideRails" aria-label="文稿導覽">
     <section class="rail rail-left" aria-labelledby="groups-title">
