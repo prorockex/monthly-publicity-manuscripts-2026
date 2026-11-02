@@ -437,10 +437,10 @@ export function mountSkyIsland(env) {
     const delta = new THREE.Vector3().subVectors(p1, p0);
     const length = delta.length();
     const xAxis = delta.clone().normalize();
-    const zAxis = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), xAxis);
+    const zAxis = new THREE.Vector3().crossVectors(xAxis, new THREE.Vector3(0, 1, 0));
     if (zAxis.lengthSq() < 1e-8) zAxis.set(0, 0, 1);
     zAxis.normalize();
-    const yAxis = new THREE.Vector3().crossVectors(xAxis, zAxis).normalize();
+    const yAxis = new THREE.Vector3().crossVectors(zAxis, xAxis).normalize();
     const bridge = new THREE.Group();
     bridge.position.copy(p0).add(p1).multiplyScalar(0.5);
     bridge.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(xAxis, yAxis, zAxis));
@@ -740,7 +740,7 @@ export function mountSkyIsland(env) {
         const dy = target.y - res.baseY;
         const dz = target.z - res.mesh.position.z;
         const d = Math.hypot(dx, dy, dz);
-        if (Math.hypot(dx, dz) > 1e-4) res.mesh.rotation.y = -Math.atan2(dz, dx);
+        if (Math.hypot(dx, dz) > 1e-4) res.mesh.rotation.y = -(Math.atan2(dz, dx) + Math.PI / 2);
         if (d <= move) {
           res.mesh.position.x = target.x;
           res.baseY = target.y;
