@@ -50,13 +50,13 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
   }
 
   if (!months.length || !latest) {
-    unavailable("目前尚無月份資料；請使用清單或稍後再試。 ");
+    unavailable("目前尚無月份資料；請使用文稿導覽，或稍後再試。");
     return;
   }
 
   const probe = document.createElement("canvas");
   if (!probe.getContext("webgl2")) {
-    unavailable("此瀏覽器未啟用 WebGL；請使用月份、類別或組別清單進入審稿頁。");
+    unavailable("此瀏覽器未啟用 WebGL；請使用文稿導覽進入審稿頁。若導覽已收合，按上方「顯示導覽」。");
     return;
   }
 
@@ -64,7 +64,7 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "low-power" });
   } catch (_) {
-    unavailable("3D 場景無法啟動；右側清單仍可完整使用。");
+    unavailable("3D 場景無法啟動；文稿導覽仍可完整使用。若導覽已收合，按上方「顯示導覽」。");
     return;
   }
 
@@ -739,7 +739,7 @@ import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer
   renderer.domElement.addEventListener("pointercancel", () => { down = null; }, { passive: true });
   renderer.domElement.addEventListener("webglcontextlost", (event) => {
     event.preventDefault();
-    unavailable("3D 圖形暫時中斷；請使用右側清單繼續瀏覽。");
+    unavailable("3D 圖形暫時中斷；請改用文稿導覽。若導覽已收合，按上方「顯示導覽」。");
   });
 
   let flight = null;
