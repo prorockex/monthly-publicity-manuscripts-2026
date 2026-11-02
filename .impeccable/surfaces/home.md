@@ -14,9 +14,9 @@
 
 **OWN-WORLD:** Extend the existing green publication-site palette into low-poly grass, stone, and blue-green water, with restrained warm roof/marker accents. Use the actual manuscript categories and dates as labels; no generic policy topics or copied campaign content.
 
-**STORY:** A visitor first sees a navigable archive, then chooses a month or a filter. Drag/touch rotates the view, wheel/pinch zooms, selecting a structure highlights it and opens the reviewer; a static directory stays present as the no-WebGL and keyboard path.
+**STORY:** A visitor first sees the archipelago, then chooses a month, group, or category from the side rails (or from the islands themselves). Drag/touch rotates the view, wheel/pinch zooms, selecting a structure highlights it and opens the reviewer. The same links stay in the document when WebGL or JavaScript is unavailable. A single control shows or hides the rails; there is no second layout that shrinks the island.
 
-**FIRST VIEWPORT:** Show the Chinese title and archive totals above a wide island scene, with the month islands and central overview readable at once. Place a compact directory alongside the scene on desktop and directly below it on mobile; month/category/group links remain visible without JavaScript.
+**FIRST VIEWPORT:** The island scene fills the viewport, with the three group islands and the central overview readable in the middle. On wide screens, group links sit in the left margin and category/month links sit in the right margin. On narrow or square screens the same links stack under the scene so they do not cover the 3D controls. Links remain visible without JavaScript.
 
 **FORM:** User-pinned low-poly island topology and HEART-style interaction reference; visual content and copy remain about union publicity manuscripts. Concept seeding is intentionally skipped because the structure, controls, routes, and exclusions were specified in the request. Seed key: not applicable.
 
