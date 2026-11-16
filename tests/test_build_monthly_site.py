@@ -58,8 +58,11 @@ class MonthlySiteBuildTests(unittest.TestCase):
         self.assertIn("入選", review)
         self.assertIn("不入選", review)
         self.assertIn("ReviewDocx.build", review)
+        self.assertIn("ReviewCollection.selectedEntries", review)
+        self.assertIn("目前這個月份尚無標記為入選的作品", review)
         self.assertNotIn("__DATA__", review)
         self.assertNotIn("__DOCX_EXPORT__", review)
+        self.assertNotIn("__REVIEW_COLLECTION__", review)
         self.assertEqual({path: digest(path) for path in protected}, before)
         self.assertIn("Built index.html: 3 months, 144 articles", result.stdout)
 
