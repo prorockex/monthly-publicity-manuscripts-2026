@@ -23,8 +23,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1y7u-YbOO4-c99c86ee-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_01_e0dbcc3a.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1KxrOjUzYUrOIQ32O3oS-MD-wj-r0wBKf/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1y7u-YbOO4lC1Wi-niAC5O64uXdBA3KbW/view?usp=sharing",
@@ -51,8 +54,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1_ZJ7w9Blf-5801f4b8-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_02_f21f5ce7.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/10SlUUVYZ7eNzHgAyFC9RziJtnZf1Kx0i/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1_ZJ7w9Blf27Gxblc__5AFhXbGZlq_ASY/view?usp=sharing",
@@ -90,8 +96,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1ekNwEK5Dz-83d2f082-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_03_3e8e04bf.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1dAjE41jzPJhw4X15G803L0nu9usUlpN6/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1ekNwEK5DzjxsdpQWKAzsWfPErrX9lw0U/view?usp=sharing",
@@ -117,20 +126,32 @@
       ],
       "images": [
         {
-          "src": "assets/drive-12VrtF2Y_i-947efb6f-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_04_55676613.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/15bz3NtfPduuv9J80A59RDl7bFKayWJKm/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-12VrtF2Y_i-3dca69bf-02.jpeg",
-          "caption": "Google Drive 原稿預覽圖 2"
+          "src": "assets/nov_05_99ecd405.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/17C-57okWyWUu4nbejOUWIcVwGiTHQRt1/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-12VrtF2Y_i-f6a1702b-03.jpeg",
-          "caption": "Google Drive 原稿預覽圖 3"
+          "src": "assets/nov_06_daef938d.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1KhXrIujVZXwIx0gEwvjow0HkJeOYUaGw/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-12VrtF2Y_i-b7dbc708-04.jpeg",
-          "caption": "Google Drive 原稿預覽圖 4"
+          "src": "assets/nov_07_58ab7c22.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1CxsildcCKdytndJeH9ZkW-HwCt976jM3/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/12VrtF2Y_imILP-1IKrug1LyJqWeW0XqG/view?usp=sharing",
@@ -154,20 +175,32 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1ZZpkseyyK-5349c320-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_08_0b9c721f.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1942D0kchiuDHSWki_6l3bzQBHGT6itUE/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1ZZpkseyyK-aa575ca2-02.jpeg",
-          "caption": "Google Drive 原稿預覽圖 2"
+          "src": "assets/nov_09_3cc0118a.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1TtPZ3DlPyv7EMLOSyQDd-P4T0k4YfuU-/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1ZZpkseyyK-44af604c-03.jpeg",
-          "caption": "Google Drive 原稿預覽圖 3"
+          "src": "assets/nov_10_53a7cad1.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1uaU4mwMx0tnTnXvrAHztpPBYCAiGRlsc/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1ZZpkseyyK-6b6af8b8-04.jpeg",
-          "caption": "Google Drive 原稿預覽圖 4"
+          "src": "assets/nov_11_16c2ec5a.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1j92SNqHOePOX6-BdYEuT-ryvYxhJuXWX/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1ZZpkseyyK9-08zIX1u3xry0SzHCuPJBQ/view?usp=sharing",
@@ -197,20 +230,32 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1BADieCSX8-da66062c-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_12_6cb3850a.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1RzWEgN49_0VhBsfa8m7cT0vQXjllEYoB/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1BADieCSX8-27d62e59-02.jpeg",
-          "caption": "Google Drive 原稿預覽圖 2"
+          "src": "assets/nov_13_debbf642.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1JBj9EI-d3Pxa1P0O9l8ngLye6weEUy-G/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1BADieCSX8-7d5751d2-03.jpeg",
-          "caption": "Google Drive 原稿預覽圖 3"
+          "src": "assets/nov_14_fff19efe.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1osYw4JY865mimkOyAdee1r5_YPj0sWL4/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1BADieCSX8-5199008d-04.jpeg",
-          "caption": "Google Drive 原稿預覽圖 4"
+          "src": "assets/nov_15_1279aaa9.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/18KB8aKnkM0O9ZWN5IUaVRYjvmWGQYCaq/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1BADieCSX8WUVgrKL1SMgIVym8Dryjynt/view?usp=sharing",
@@ -242,20 +287,32 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1fBxa1sxQS-079ebc2d-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_16_08709aad.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1z7F6tXOAgdT_uCgec5vyHS4F4F5H9zDu/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1fBxa1sxQS-70465f72-02.jpeg",
-          "caption": "Google Drive 原稿預覽圖 2"
+          "src": "assets/nov_17_fd16ec3f.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1LlO0ha2av0vGoyIl3OxMEvAqOW6AD10O/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1fBxa1sxQS-ab5d7729-03.jpeg",
-          "caption": "Google Drive 原稿預覽圖 3"
+          "src": "assets/nov_18_41b96fd1.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1b0ScPsNTkhloB6AWv95NJdzhT19Fghft/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1fBxa1sxQS-b8bcb02c-04.jpeg",
-          "caption": "Google Drive 原稿預覽圖 4"
+          "src": "assets/nov_19_69790b6b.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1YxKXu0MwzRZdL0TMAt4_Nki2HHTfkz7i/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1fBxa1sxQS1x-h6WXfv9N0iRHNvGHdnEQ/view?usp=sharing",
@@ -285,8 +342,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1Tny1ILBWO-81ab05af-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_20_7f90fe9a.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1-EhP6n4DGey2yJkc3NVTnRcbFj6Tlm__/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1Tny1ILBWOrcRgx23s31pMBHX1KLfyZZT/view?usp=sharing",
@@ -313,8 +373,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1ftkBA6ef3-89a21962-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_21_718dad70.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/18EN4uryFxAyXTYCYZb9aq0Lf4vH4VGKI/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1ftkBA6ef37Wqit5Wn_6G2m8k3V2pLd_-/view?usp=sharing",
@@ -337,8 +400,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1tjtLBizUz-524240d9-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_22_e1f6943e.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1Nj72sKygaZdtSpDQbhBKR6xYfSCHm18-/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1tjtLBizUz7_LomUFroF1_C9acjdO-DtU/view?usp=sharing",
@@ -360,8 +426,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1FUyKDwtDu-dd4c140d-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_23_2e97dfeb.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1vXrNXiusiT6UIssNL0F_oiVoRvsSFAm9/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1FUyKDwtDu2KeIGVrIG-XHQ_I0ojEApRd/view?usp=sharing",
@@ -383,8 +452,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1VY2lZFjHT-2503312a-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_24_2cc86d63.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1gh_8CC1oLWG4hKKv4C-ghq8Dm4wNGNxQ/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1VY2lZFjHTRz5Q0O-20ooqM3U4pgaQsqC/view?usp=sharing",
@@ -407,8 +479,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1OkJfHceOt-71475dbb-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_25_b2636af3.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1v5MnjNF6BIBmNysJ4-x4RQiFoZGkoksi/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1OkJfHceOtmXjxyArK5vLG8WPEeltqdx4/view?usp=sharing",
@@ -431,8 +506,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1v1BC2XsCG-0a2cd6ec-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_26_fa664f1f.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1MyHhaG8j0zzS-CdCmUTw7AmE-1m7tOLU/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1v1BC2XsCGsWvc9-Hz4jYmQDAlP6ZQbu0/view?usp=sharing",
@@ -454,8 +532,18 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1E_l9Ngymn-913ffa1a-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_27_0f2f9f95.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/10Pit_YrRx3P0PwOFNXjlQS6rhq_2quJ9/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
+        },
+        {
+          "src": "assets/nov_28_149923e5.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/10O88HHuapu2gzpCp0eJUSJ4TqX2lqFii/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1E_l9NgymnlUcCMjKNfPIe16gN3UbdIn4/view?usp=sharing",
@@ -478,8 +566,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1sfqfhXKzC-3e900e2a-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_29_9a4e0f26.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1stq6okyRHkkCd05YjqFgOqXk9J45GLjC/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1sfqfhXKzCjKT-607x_7HYESpBf1QUuPk/view?usp=sharing",
@@ -501,8 +592,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1I4UyLxuuD-dd8df9b3-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_30_f56c8d70.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/19T_Adza7IcUjDj38TDh97UpHoJLntmyW/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1I4UyLxuuDq5tmxvqgNnfpUrctCOl-zVs/view?usp=sharing",
@@ -525,8 +619,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1V08YyQNUZ-13419afd-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_31_dd70980e.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1lS6c9Di3QBSyNTeSXP12PznU-CclTAPT/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1V08YyQNUZQZW_w1TnPNY2olARA5VM_G4/view?usp=sharing",
@@ -548,8 +645,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-137NFvkzqk-2199d99b-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_32_d4957551.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1B4JV46ZCzQxpfrgtoSbdbmoAKvK4Fx29/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/137NFvkzqkn95KX-dhTQCq-POzdL9AtgG/view?usp=sharing",
@@ -571,8 +671,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1LoYdmZag4-b374eaef-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_33_26e06bb6.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1KzFKoG8dTaFaSvuejZJZfuGLnTocMsHI/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1LoYdmZag4xqaVA7Oy9kl6U0F5YkS16d2/view?usp=sharing",
@@ -597,16 +700,25 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1_jQyqXqEG-bcfb9ac3-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_34_33f5a775.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1n8TeRtdFe6AzI4tid3OAlqEA4GlTgdMK/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1_jQyqXqEG-8a162786-02.jpeg",
-          "caption": "Google Drive 原稿預覽圖 2"
+          "src": "assets/nov_35_31ebbbea.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1KKnX1JlcjwAYKDMyX0H_Idp9a1wAli2W/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1_jQyqXqEG-95e1f35c-03.jpeg",
-          "caption": "Google Drive 原稿預覽圖 3"
+          "src": "assets/nov_36_772c554f.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/114rfu2BBgJpInbFTSQmejOD8U8NPFD9L/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1_jQyqXqEGODC_epSiEyzOLZSUIsDRQM7/view?usp=sharing",
@@ -645,8 +757,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1PPf2pykTE-f547624e-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_37_1863b5cd.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1PF7ptFbvkyCKELYAYyFeXieGsd1_QqQy/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1PPf2pykTEW7-gktdFnhPMlzpFZ2HwODk/view?usp=sharing",
@@ -677,8 +792,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1GwkZWTlMV-1d445b9d-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_38_6894459e.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1HWPp-GYHHamzrzhdJFH44xIC5ckyu6TZ/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1GwkZWTlMVf8Me8h6pQ0d-0DUT6mDOWSH/view?usp=sharing",
@@ -740,20 +858,32 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1CrEK8PKLO-29f84d99-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_39_fcec5286.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1JvMOC4nVVtEawop9q6yGxJAKQDMKsFXl/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1CrEK8PKLO-bb7fef59-02.jpeg",
-          "caption": "Google Drive 原稿預覽圖 2"
+          "src": "assets/nov_40_a19a53f0.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1jcCYwt8TniyJkoHfUNgLO3S1ChFVV4fQ/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1CrEK8PKLO-c3bbaeaf-03.jpeg",
-          "caption": "Google Drive 原稿預覽圖 3"
+          "src": "assets/nov_41_6af5a24b.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1nnKDcz3DJM0uFwvB0SJlxdnNLwXowo_O/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         },
         {
-          "src": "assets/drive-1CrEK8PKLO-8fd39698-04.jpeg",
-          "caption": "Google Drive 原稿預覽圖 4"
+          "src": "assets/nov_42_fa837a5c.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1YKsA8BUK7-IP5Ab2FYHuxzdafEyf7W7S/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1CrEK8PKLOz_pJurlJWMs0YCYot_K60t5/view?usp=sharing",
@@ -828,8 +958,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1KOe8sB7K4-11508bdc-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_43_31856ef0.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1O6qooDIfBhgoJW1HRNNTk--0UC4HCmXZ/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1KOe8sB7K4m524xTNsEFxD0psgBvK7WTp/view?usp=sharing",
@@ -863,8 +996,11 @@
       ],
       "images": [
         {
-          "src": "assets/drive-1ZYcq63H5b-3c94ff45-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_44_d56c76a9.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/11Hilwsw8QequWnvqxI-PhcJQ7uLhmU0B/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1ZYcq63H5b6dIocElAyxLZqVO8fdeDp6C/view?usp=sharing",
@@ -884,8 +1020,11 @@
       "paragraphs": [],
       "images": [
         {
-          "src": "assets/drive-1ixSaUMPxG-fd4fd305-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_45_2daee753.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1w2reyKtOcbK2WPkRmyjTP81jTyYmFZsl/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1ixSaUMPxGeVWuTsdhYSvJxQOzTq7ijGT/view?usp=sharing",
@@ -905,8 +1044,11 @@
       "paragraphs": [],
       "images": [
         {
-          "src": "assets/drive-1emKCzg7ll-f3787876-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_46_f2d5a5a7.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1XlkEC5zgeIFyXlGHL1asFfNajZGLbx3u/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1emKCzg7llij832a4pp6sAC8Z0ZH0C3VZ/view?usp=sharing",
@@ -926,8 +1068,11 @@
       "paragraphs": [],
       "images": [
         {
-          "src": "assets/drive-1Cm8BjsqgG-1c25651c-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_47_b89593c3.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1kj0nzhBZr-NEQQfbfr1oXEX2b5KUfARH/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1Cm8BjsqgGHHdGmb4oQF0bWKHUT-adUro/view?usp=sharing",
@@ -947,8 +1092,11 @@
       "paragraphs": [],
       "images": [
         {
-          "src": "assets/drive-18_vCrrAJV-8a6386e3-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_48_4f4eca19.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1wQPFSM-6gku2u0aCpnH2nKrwhWqYfp5A/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/18_vCrrAJVaZIYFaDfsUQtv99CKVikLs9/view?usp=sharing",
@@ -968,8 +1116,11 @@
       "paragraphs": [],
       "images": [
         {
-          "src": "assets/drive-1KEMRfNyYg-fb473d32-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_49_deba3776.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1Z_Y2aNbqeWsL1BsmYzT-CsBPcoxMu6SS/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1KEMRfNyYggUzOYyMehqNI7TZJQu4G0cf/view?usp=sharing",
@@ -989,8 +1140,11 @@
       "paragraphs": [],
       "images": [
         {
-          "src": "assets/drive-1-Wfo75lfx-fd4caa98-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_50_26ec1c0f.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1YyKHcheGyHMb-3BE9tXbpDutid5Qz5aI/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1-Wfo75lfxnVhHkUORd1bdd778hh14o4L/view?usp=sharing",
@@ -1010,8 +1164,11 @@
       "paragraphs": [],
       "images": [
         {
-          "src": "assets/drive-1LCOqVxxLy-50ebcb68-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_51_e0a1e3be.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1gkP5m1___TzgIhORbYrMv6aEoT0iiW3X/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1LCOqVxxLyj0Wt4jvW2jket4pr2QiCtUB/view?usp=sharing",
@@ -1031,8 +1188,11 @@
       "paragraphs": [],
       "images": [
         {
-          "src": "assets/drive-1_WmXmmZiB-c087a066-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_52_6868842a.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1kx4Vrv1-YIrWPcFva-NiHPGOBT8Vp3dX/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/1_WmXmmZiB39eJjT_e8EiwbXzlk7JOdRu/view?usp=sharing",
@@ -1052,8 +1212,11 @@
       "paragraphs": [],
       "images": [
         {
-          "src": "assets/drive-11JYEROaXC-bae61e7e-01.jpeg",
-          "caption": "Google Drive 原稿預覽圖 1"
+          "src": "assets/nov_53_69bf53af.jpeg",
+          "caption": "稿件附圖",
+          "driveUrl": "https://drive.google.com/file/d/1vCOGNO2WHXnPxKHKBlv-XJOegoFVD4TH/view?usp=sharing",
+          "driveKind": "photo",
+          "driveLabel": "在 Google Drive 開啟原始照片"
         }
       ],
       "driveUrl": "https://drive.google.com/file/d/11JYEROaXCh--6pT98f7WETheu_Hf9uqA/view?usp=sharing",
