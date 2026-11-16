@@ -6,7 +6,7 @@
   "scripts": {
     "build:home": "esbuild src/island_home.js --bundle --minify --format=iife --target=es2020 --outfile=assets/island-home.bundle.js",
     "build:site": "npm run build:home && python3 scripts/build_monthly_site.py",
-    "test": "python3 -m unittest discover -s tests -v"
+    "test": "python3 -m unittest discover -s tests -v && node tests/test_review_collection.js"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

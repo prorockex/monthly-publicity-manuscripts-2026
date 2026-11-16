@@ -13,6 +13,7 @@ HOME_OUT = ROOT / "index.html"
 REVIEW_OUT = ROOT / "month.html"
 DATA_DIR = ROOT / "data"
 DOCX_EXPORTER = ROOT / "scripts" / "docx_export.js"
+REVIEW_COLLECTION = ROOT / "scripts" / "review_collection.js"
 ALLOWED_GROUPS = {0, 1, 2, 3}
 ALLOWED_CATEGORIES = {"文稿", "剪影", "詩詞", "親子園地", "封底", "待分類"}
 
@@ -31,6 +32,7 @@ def main():
     review_template = REVIEW_TEMPLATE.read_text(encoding="utf-8")
     home_template = HOME_TEMPLATE.read_text(encoding="utf-8")
     exporter = DOCX_EXPORTER.read_text(encoding="utf-8")
+    collection = REVIEW_COLLECTION.read_text(encoding="utf-8")
     months = [json.loads(path.read_text(encoding="utf-8")) for path in sorted(DATA_DIR.glob("*.json"))]
     if not months:
         raise SystemExit("No month JSON data found")
@@ -62,6 +64,7 @@ def main():
     months.sort(key=lambda item: (int(item["year"]), int(item["month"])))
     review_html = _replace_once(review_template, "__DATA__", _payload(months), "site_template.html")
     review_html = _replace_once(review_html, "__DOCX_EXPORT__", exporter, "site_template.html")
+    review_html = _replace_once(review_html, "__REVIEW_COLLECTION__", collection, "site_template.html")
 
     summary = summarize_months(months)
     nav = home_navigation_html(summary)
