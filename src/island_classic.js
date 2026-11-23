@@ -539,7 +539,7 @@ export function mountClassicIsland(env) {
     root.add(base, rim, top);
     const props = addSurveyProps(root);
     markSurveyMeshes(root, url, [base, rim, top, ...props]);
-    root.add(makeLabel("讀者問卷", "《中鋼勞工月刊》預覽版", url, { x: 0, y: 3.15, z: 0 }, "survey-label", {
+    root.add(makeLabel("讀者問卷", "預覽版", url, { x: 0, y: 3.15, z: 0 }, "survey-label", {
       openInNewTab: true,
       ariaLabel: "讀者問卷，開啟問卷預覽（新分頁）"
     }));
@@ -712,8 +712,20 @@ export function mountClassicIsland(env) {
     stepResident(res, time, dt);
   }
 
-  const sceneExtent = LAYOUT.ringRadius + LAYOUT.islandRadius;
-  const viewDistance = (width) => Math.max(width < 560 ? 44 : 34, sceneExtent * (width < 560 ? 3.6 : 2.9));
+  const sceneExtent = Math.max(
+    LAYOUT.ringRadius + LAYOUT.islandRadius,
+    Math.hypot(SURVEY_ISLAND.x, SURVEY_ISLAND.z) + SURVEY_ISLAND.radius
+  );
+  const viewDistance = (width) => Math.max(width < 560 ? 50 : 34, sceneExtent * (width < 560 ? 4.15 : 2.9));
+  function frameHome(width) {
+    const mobileLayout = width < 560;
+    // 手機版世界轉 90° 後問卷島到 +X；鏡頭略偏右並拉遠讓標籤進畫面。桌機對準原點，不改既有構圖。
+    const targetX = mobileLayout ? 4.6 : 0;
+    const distance = viewDistance(width);
+    controls.target.set(targetX, 0.85, 0);
+    camera.position.set(targetX, distance * 0.82, distance * 0.58);
+    controls.update();
+  }
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -749,11 +761,7 @@ export function mountClassicIsland(env) {
   }
   rotateButton.addEventListener("click", onRotateClick);
   function onResetClick() {
-    controls.target.set(0, 0.85, 0);
-    const width = stage.getBoundingClientRect().width;
-    const distance = viewDistance(width);
-    camera.position.set(0, distance * 0.82, distance * 0.58);
-    controls.update();
+    frameHome(stage.getBoundingClientRect().width);
   }
   resetButton.addEventListener("click", onResetClick);
 
@@ -771,9 +779,7 @@ export function mountClassicIsland(env) {
     renderer.setSize(width, height, false);
     skyMat.uniforms.resolution.value.set(renderer.domElement.width, renderer.domElement.height);
     labelRenderer.setSize(width, height);
-    const distance = viewDistance(width);
-    camera.position.set(0, distance * 0.82, distance * 0.58);
-    controls.update();
+    frameHome(width);
   }
   let resizeObserver = null;
   if (window.ResizeObserver) {
