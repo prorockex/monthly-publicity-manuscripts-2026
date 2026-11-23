@@ -69,12 +69,18 @@ class SurveyPageTests(unittest.TestCase):
         for topic in Q6[:-1]:
             self.assertIn(f'value="{topic}"', self.html)
 
-    def test_preview_has_no_backend_and_no_link_back(self):
-        self.assertIn("預覽版，不會實際送出資料", self.html)
-        self.assertIn("form.hidden = true", self.html)
-        self.assertNotIn("fetch(", self.html)
+    def test_live_submit_posts_to_endpoint_and_has_no_link_back(self):
+        self.assertRegex(self.html, r'var SURVEY_ENDPOINT = "https://script\.google\.com/macros/s/[^"]+/exec"')
+        self.assertIn('method: "POST"', self.html)
+        self.assertIn("text/plain;charset=utf-8", self.html)
+        self.assertIn("fetch(SURVEY_ENDPOINT", self.html)
+        self.assertIn("送出失敗，請稍後再試", self.html)
+        self.assertIn("送出中…", self.html)
+        self.assertIn("submitButton.disabled = true", self.html)
         self.assertNotIn("XMLHttpRequest", self.html)
-        # 已填記號會寫入 localStorage，但不得把題目答案送出或存成回傳資料
+        self.assertNotIn("預覽版", self.html)
+        self.assertNotIn("reset=1", self.html)
+        self.assertNotIn("wantsReset", self.html)
         lowered = self.html.lower()
         self.assertNotIn("index.html", lowered)
         self.assertNotIn("month.html", lowered)
@@ -98,6 +104,7 @@ class SurveyPageTests(unittest.TestCase):
             self.assertIn("讀者問卷", source)
             self.assertIn("survey-rail-link", source)
             self.assertIn("survey-label", source)
+            self.assertNotIn("預覽版", source)
             self.assertNotIn("清單模式", source)
 
     def test_both_editions_open_survey_in_a_new_tab(self):
@@ -109,6 +116,7 @@ class SurveyPageTests(unittest.TestCase):
             self.assertIn('window.open(route, "_blank", "noopener,noreferrer")', source)
             self.assertIn("openInNewTab", source)
             self.assertIn("survey-label", source)
+            self.assertNotIn("預覽版", source)
 
     def test_survey_island_clearance_from_existing_layout(self):
         # 與 src 中常數一致：xz=(0, 9.2), r=1.65；天空版 y=6
@@ -136,7 +144,7 @@ class SurveyPageTests(unittest.TestCase):
             self.assertIn("z: 9.2", source)
             self.assertIn("radius: 1.65", source)
 
-    def test_one_response_per_device_blocks_form_and_preview_reset_clears_it(self):
+    def test_one_response_per_device_blocks_form_until_successful_submit(self):
         self.assertIn("survey-2026-reader-v1", self.html)
         self.assertIn("localStorage.setItem", self.html)
         self.assertIn("document.cookie", self.html)
@@ -146,13 +154,14 @@ class SurveyPageTests(unittest.TestCase):
         self.assertIn('id="already"', self.html)
         self.assertIn("showAlready", self.html)
         self.assertIn("persistMark", self.html)
-        self.assertIn("wantsReset", self.html)
-        self.assertIn('get("reset") === "1"', self.html)
-        self.assertIn("正式上線前請移除此段 reset 邏輯", self.html)
-        self.assertIn("預覽版，不會實際送出資料", self.html)
-        self.assertNotIn("fetch(", self.html)
-        self.assertNotIn("XMLHttpRequest", self.html)
-        # 只存已填記號與裝置 ID，不把問卷答案寫入記號
+        self.assertIn("ensureDeviceId", self.html)
+        self.assertIn('data.reason === "duplicate"', self.html)
+        self.assertIn("showThanks", self.html)
+        self.assertIn("failSubmit", self.html)
+        self.assertNotIn("wantsReset", self.html)
+        self.assertNotIn("reset=1", self.html)
+        self.assertNotIn("預覽版", self.html)
+        # 成功或重複才寫已填記號；題目答案只經 POST 送出，不寫入本機記號
         self.assertNotRegex(
             self.html,
             r"localStorage\.setItem\([^)]*(q1|q2|q3|q4|q5|q6|q7|q8)",
@@ -160,9 +169,7 @@ class SurveyPageTests(unittest.TestCase):
         self.assertIn("deviceId:", self.html)
         self.assertIn("submitted: true", self.html)
         self.assertIn("showAlready();", self.html)
-        self.assertIn("clearMark", self.html)
         lowered = self.html.lower()
-        self.assertNotIn("index.html", lowered)
         self.assertNotIn("month.html", lowered)
 
 

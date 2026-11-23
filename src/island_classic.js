@@ -539,9 +539,9 @@ export function mountClassicIsland(env) {
     root.add(base, rim, top);
     const props = addSurveyProps(root);
     markSurveyMeshes(root, url, [base, rim, top, ...props]);
-    root.add(makeLabel("讀者問卷", "預覽版", url, { x: 0, y: 3.15, z: 0 }, "survey-label", {
+    root.add(makeLabel("讀者問卷", "《中鋼勞工月刊》", url, { x: 0, y: 3.15, z: 0 }, "survey-label", {
       openInNewTab: true,
-      ariaLabel: "讀者問卷，開啟問卷預覽（新分頁）"
+      ariaLabel: "讀者問卷，開啟問卷（新分頁）"
     }));
     return root;
   }
