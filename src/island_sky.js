@@ -138,6 +138,7 @@ export function mountSkyIsland(env) {
     if (options.openInNewTab) {
       anchor.target = "_blank";
       anchor.rel = "noopener noreferrer";
+      anchor.referrerPolicy = "no-referrer";
     }
     const aria = options.ariaLabel || (detailText ? `${primaryText}，${detailText}，開啟審稿頁` : `${primaryText}，開啟審稿頁`);
     anchor.setAttribute("aria-label", aria);
@@ -548,7 +549,7 @@ export function mountSkyIsland(env) {
   // 問卷連結島：與經典版同一 xz（0, 9.2），高度 y=6.0、半徑 1.65，避開三座主島、斜向橋、島民路徑與飛機航線。
   // 最近主島為第 2 組，三維中心距 8.7321，邊緣淨距 3.6821；距 2–3 橋 5.2529（淨距 3.2529）；
   // 距中樞 9.4149（淨距 6.2149）；距低空飛機航線最近點 10.4403，高空航線 11.5278。
-  const SURVEY_ISLAND = { x: 0, y: 6.0, z: 9.2, radius: 1.65, url: "survey/index.html" };
+  const SURVEY_ISLAND = { x: 0, y: 6.0, z: 9.2, radius: 1.65, url: "https://script.google.com/macros/s/AKfycbxt_MPorgyHVr5diD7ax6BVVQpQPEkAqerF2ew0yTlBjedCCfiXlD1nrKA4s88w4Q5M/exec" };
 
   function markSurveyMeshes(root, url, meshes) {
     root.userData.route = url;
