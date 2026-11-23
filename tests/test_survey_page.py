@@ -74,7 +74,7 @@ class SurveyPageTests(unittest.TestCase):
         self.assertIn("form.hidden = true", self.html)
         self.assertNotIn("fetch(", self.html)
         self.assertNotIn("XMLHttpRequest", self.html)
-        self.assertNotIn("localStorage", self.html)
+        # 已填記號會寫入 localStorage，但不得把題目答案送出或存成回傳資料
         lowered = self.html.lower()
         self.assertNotIn("index.html", lowered)
         self.assertNotIn("month.html", lowered)
@@ -135,6 +135,36 @@ class SurveyPageTests(unittest.TestCase):
             self.assertIn("x: 0", source)
             self.assertIn("z: 9.2", source)
             self.assertIn("radius: 1.65", source)
+
+    def test_one_response_per_device_blocks_form_and_preview_reset_clears_it(self):
+        self.assertIn("survey-2026-reader-v1", self.html)
+        self.assertIn("localStorage.setItem", self.html)
+        self.assertIn("document.cookie", self.html)
+        self.assertIn("indexedDB", self.html)
+        self.assertIn("crypto.randomUUID", self.html)
+        self.assertIn("您已填答過本問卷，感謝您的參與", self.html)
+        self.assertIn('id="already"', self.html)
+        self.assertIn("showAlready", self.html)
+        self.assertIn("persistMark", self.html)
+        self.assertIn("wantsReset", self.html)
+        self.assertIn('get("reset") === "1"', self.html)
+        self.assertIn("正式上線前請移除此段 reset 邏輯", self.html)
+        self.assertIn("預覽版，不會實際送出資料", self.html)
+        self.assertNotIn("fetch(", self.html)
+        self.assertNotIn("XMLHttpRequest", self.html)
+        # 只存已填記號與裝置 ID，不把問卷答案寫入記號
+        self.assertNotRegex(
+            self.html,
+            r"localStorage\.setItem\([^)]*(q1|q2|q3|q4|q5|q6|q7|q8)",
+        )
+        self.assertIn("deviceId:", self.html)
+        self.assertIn("submitted: true", self.html)
+        self.assertIn("showAlready();", self.html)
+        self.assertIn("clearMark", self.html)
+        lowered = self.html.lower()
+        self.assertNotIn("index.html", lowered)
+        self.assertNotIn("month.html", lowered)
+
 
 
 if __name__ == "__main__":

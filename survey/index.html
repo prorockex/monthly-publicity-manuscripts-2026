@@ -67,6 +67,8 @@
       letter-spacing: -.03em;
     }
     .lede { margin: 10px 0 0; color: var(--muted); font-size: 15px; }
+    html.survey-already #survey-form, html.survey-already .lede { display: none !important; }
+    html.survey-already #already { display: block !important; }
     form, .thanks {
       background: var(--sheet);
       border: 1px solid var(--line);
@@ -185,6 +187,21 @@
       .sat .choice input { margin: 0; }
     }
   </style>
+  <script>
+    (function () {
+      var key = "survey-2026-reader-v1";
+      try {
+        if (/(?:^|[?&])reset=1(?:&|$)/.test(location.search || "")) return;
+        var marked = false;
+        try {
+          var stored = JSON.parse(localStorage.getItem(key) || "null");
+          if (stored && stored.submitted && stored.deviceId) marked = true;
+        } catch (e) {}
+        if (!marked && document.cookie.indexOf(key + "=") !== -1) marked = true;
+        if (marked) document.documentElement.classList.add("survey-already");
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
   <div class="preview-banner" role="status">預覽版，不會實際送出資料</div>
@@ -328,11 +345,223 @@
       <p>您的意見對《中鋼勞工月刊》很重要。</p>
       <p class="preview-note">預覽版，不會實際送出資料</p>
     </section>
+
+    <section class="thanks" id="already" hidden>
+      <h2>您已填答過本問卷，感謝您的參與</h2>
+      <p class="preview-note">預覽版，不會實際送出資料</p>
+    </section>
   </div>
   <script>
     (function () {
       var form = document.getElementById("survey-form");
       var thanks = document.getElementById("thanks");
+      var already = document.getElementById("already");
+      var SURVEY_KEY = "survey-2026-reader-v1";
+      var IDB_STORE = "marks";
+      var IDB_ENTRY = "record";
+
+      function makeDeviceId() {
+        if (window.crypto && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+        var bytes = new Uint8Array(16);
+        if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+        else for (var i = 0; i < 16; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        var hex = Array.prototype.map.call(bytes, function (b) {
+          return ("0" + b.toString(16)).slice(-2);
+        }).join("");
+        return hex.slice(0, 8) + "-" + hex.slice(8, 12) + "-" + hex.slice(12, 16) + "-" + hex.slice(16, 20) + "-" + hex.slice(20);
+      }
+
+      function isFilledRecord(record) {
+        return !!(record && record.submitted && record.deviceId);
+      }
+
+      function readLocal() {
+        try {
+          return JSON.parse(localStorage.getItem(SURVEY_KEY) || "null");
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function writeLocal(record) {
+        try { localStorage.setItem(SURVEY_KEY, JSON.stringify(record)); } catch (e) {}
+      }
+
+      function clearLocal() {
+        try { localStorage.removeItem(SURVEY_KEY); } catch (e) {}
+      }
+
+      function readCookie() {
+        var parts = (document.cookie || "").split(";");
+        for (var i = 0; i < parts.length; i += 1) {
+          var part = parts[i].trim();
+          if (part.indexOf(SURVEY_KEY + "=") !== 0) continue;
+          try {
+            return JSON.parse(decodeURIComponent(part.slice(SURVEY_KEY.length + 1)));
+          } catch (e) {
+            return null;
+          }
+        }
+        return null;
+      }
+
+      function writeCookie(record) {
+        var value = encodeURIComponent(JSON.stringify(record));
+        var cookie = SURVEY_KEY + "=" + value + "; Max-Age=" + (60 * 60 * 24 * 400) + "; Path=/; SameSite=Lax";
+        if (location.protocol === "https:") cookie += "; Secure";
+        document.cookie = cookie;
+      }
+
+      function clearCookie() {
+        document.cookie = SURVEY_KEY + "=; Max-Age=0; Path=/; SameSite=Lax";
+      }
+
+      function openIdb() {
+        return new Promise(function (resolve) {
+          if (!window.indexedDB) { resolve(null); return; }
+          var req = indexedDB.open(SURVEY_KEY, 1);
+          req.onupgradeneeded = function () {
+            if (!req.result.objectStoreNames.contains(IDB_STORE)) req.result.createObjectStore(IDB_STORE);
+          };
+          req.onsuccess = function () { resolve(req.result); };
+          req.onerror = function () { resolve(null); };
+        });
+      }
+
+      function readIdb() {
+        return openIdb().then(function (db) {
+          if (!db) return null;
+          return new Promise(function (resolve) {
+            var done = function (value) {
+              try { db.close(); } catch (e) {}
+              resolve(value || null);
+            };
+            try {
+              var req = db.transaction(IDB_STORE, "readonly").objectStore(IDB_STORE).get(IDB_ENTRY);
+              req.onsuccess = function () { done(req.result); };
+              req.onerror = function () { done(null); };
+            } catch (e) {
+              done(null);
+            }
+          });
+        });
+      }
+
+      function writeIdb(record) {
+        return openIdb().then(function (db) {
+          if (!db) return;
+          return new Promise(function (resolve) {
+            var done = function () {
+              try { db.close(); } catch (e) {}
+              resolve();
+            };
+            try {
+              var req = db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).put(record, IDB_ENTRY);
+              req.onsuccess = done;
+              req.onerror = done;
+            } catch (e) {
+              done();
+            }
+          });
+        });
+      }
+
+      function clearIdb() {
+        return openIdb().then(function (db) {
+          if (!db) return;
+          return new Promise(function (resolve) {
+            var done = function () {
+              try { db.close(); } catch (e) {}
+              resolve();
+            };
+            try {
+              var req = db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).delete(IDB_ENTRY);
+              req.onsuccess = done;
+              req.onerror = done;
+            } catch (e) {
+              done();
+            }
+          });
+        });
+      }
+
+      function readSyncMark() {
+        var local = readLocal();
+        if (isFilledRecord(local)) return local;
+        var cookie = readCookie();
+        if (isFilledRecord(cookie)) return cookie;
+        return local || cookie || null;
+      }
+
+      function readAnyMark() {
+        var sync = readSyncMark();
+        if (isFilledRecord(sync)) return Promise.resolve(sync);
+        return readIdb().then(function (stored) {
+          if (isFilledRecord(stored)) return stored;
+          return sync || stored || null;
+        });
+      }
+
+      function persistMark() {
+        return readAnyMark().then(function (existing) {
+          var record = {
+            submitted: true,
+            deviceId: (existing && existing.deviceId) || makeDeviceId(),
+            submittedAt: new Date().toISOString()
+          };
+          writeLocal(record);
+          writeCookie(record);
+          return writeIdb(record);
+        });
+      }
+
+      function clearMark() {
+        clearLocal();
+        clearCookie();
+        return clearIdb();
+      }
+
+      // 預覽版專用：網址加上 ?reset=1 可清除已填記號以便重測。
+      // 正式上線前請移除此段 reset 邏輯（含 wantsReset、clearMark 呼叫，以及網址參數處理）。
+      function wantsReset() {
+        try {
+          return new URLSearchParams(location.search).get("reset") === "1";
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function showAlready() {
+        form.hidden = true;
+        thanks.hidden = true;
+        already.hidden = false;
+        document.documentElement.classList.add("survey-already");
+      }
+
+      function showForm() {
+        form.hidden = false;
+        thanks.hidden = true;
+        already.hidden = true;
+        document.documentElement.classList.remove("survey-already");
+      }
+
+      function boot() {
+        var start = wantsReset() ? clearMark() : Promise.resolve();
+        return start.then(function () {
+          if (wantsReset() && window.history && history.replaceState) {
+            var url = new URL(location.href);
+            url.searchParams.delete("reset");
+            history.replaceState({}, "", url.pathname + url.search + url.hash);
+          }
+          return readAnyMark();
+        }).then(function (mark) {
+          if (isFilledRecord(mark)) showAlready();
+          else showForm();
+        });
+      }
+
       var q1Inputs = Array.prototype.slice.call(document.querySelectorAll('input[name="q1"]'));
       var q2Inputs = Array.prototype.slice.call(document.querySelectorAll('input[name="q2"]'));
       var q2Hint = document.getElementById("q2-hint");
@@ -411,10 +640,16 @@
           if (first) first.parentElement.scrollIntoView({ behavior: "smooth", block: "center" });
           return;
         }
-        form.hidden = true;
-        thanks.hidden = false;
-        thanks.scrollIntoView({ behavior: "smooth", block: "start" });
+        persistMark().then(function () {
+          form.hidden = true;
+          already.hidden = true;
+          thanks.hidden = false;
+          document.documentElement.classList.remove("survey-already");
+          thanks.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
       });
+
+      boot();
     })();
   </script>
 </body>
