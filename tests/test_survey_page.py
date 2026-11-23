@@ -70,7 +70,7 @@ class SurveyPageTests(unittest.TestCase):
             self.assertIn(f'value="{topic}"', self.html)
 
     def test_live_submit_posts_to_endpoint_and_has_no_link_back(self):
-        self.assertIn('var SURVEY_ENDPOINT = "__SURVEY_ENDPOINT__"', self.html)
+        self.assertRegex(self.html, r'var SURVEY_ENDPOINT = "https://script\.google\.com/macros/s/[^"]+/exec"')
         self.assertIn('method: "POST"', self.html)
         self.assertIn("text/plain;charset=utf-8", self.html)
         self.assertIn("fetch(SURVEY_ENDPOINT", self.html)
