@@ -161,16 +161,42 @@ class SurveyPageTests(unittest.TestCase):
         self.assertNotIn("wantsReset", self.html)
         self.assertNotIn("reset=1", self.html)
         self.assertNotIn("預覽版", self.html)
-        # 成功或重複才寫已填記號；題目答案只經 POST 送出，不寫入本機記號
+        # 本機記號以 JSON record 寫入，不把各題答案當作 setItem 的獨立 key
         self.assertNotRegex(
             self.html,
             r"localStorage\.setItem\([^)]*(q1|q2|q3|q4|q5|q6|q7|q8)",
         )
+        self.assertIn("answersFromPayload", self.html)
+        self.assertIn("record.answers", self.html)
         self.assertIn("deviceId:", self.html)
         self.assertIn("submitted: true", self.html)
         self.assertIn("showAlready();", self.html)
         lowered = self.html.lower()
         self.assertNotIn("month.html", lowered)
+
+
+    def test_submitted_answers_are_shown_read_only_and_cannot_resubmit(self):
+        self.assertIn("showReview", self.html)
+        self.assertIn("setFormReadOnly", self.html)
+        self.assertIn("applyAnswers", self.html)
+        self.assertIn("hasStoredAnswers", self.html)
+        self.assertIn("formatSubmittedAt", self.html)
+        self.assertIn('id="review-note"', self.html)
+        self.assertIn("您已於 ", self.html)
+        self.assertIn("填答，以下是您的回覆（僅供檢視，無法再次送出）", self.html)
+        self.assertIn("此裝置未保留答案內容", self.html)
+        self.assertIn("is-readonly", self.html)
+        self.assertIn("submitButton.hidden = true", self.html)
+        self.assertIn('form.classList.contains("is-readonly")', self.html)
+        self.assertIn("Asia/Taipei", self.html)
+        self.assertIn("persistMark(result.deviceId, answersFromPayload(result.payload))", self.html)
+        self.assertIn("if (isFilledRecord(mark) && hasStoredAnswers(mark)) showReview(mark)", self.html)
+        self.assertIn('checkRadio("q1", answers.q1)', self.html)
+        self.assertIn('checkRadio("q5", answers.q5)', self.html)
+        self.assertIn("answers.q7", self.html)
+        self.assertIn("answers.q8", self.html)
+        self.assertIn("answers.q6", self.html)
+        self.assertIn("answers.q6Other", self.html)
 
 
 

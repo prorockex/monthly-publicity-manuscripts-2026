@@ -61,6 +61,19 @@
     .lede { margin: 10px 0 0; color: var(--muted); font-size: 15px; }
     html.survey-already #survey-form, html.survey-already .lede { display: none !important; }
     html.survey-already #already { display: block !important; }
+    html.survey-review .lede { display: none !important; }
+    html.survey-review #review-note { display: block !important; }
+    html.survey-review .actions, html.survey-review #submit-error { display: none !important; }
+    .review-note {
+      margin: 0 0 18px;
+      padding: 12px 16px;
+      background: #f3d3c4;
+      border-radius: 12px;
+      font-weight: 750;
+      color: #211d1d;
+    }
+    form.is-readonly .choice { cursor: default; }
+    form.is-readonly .choice:hover { border-color: var(--line); }
     form, .thanks {
       background: var(--sheet);
       border: 1px solid var(--line);
@@ -181,10 +194,15 @@
         var marked = false;
         try {
           var stored = JSON.parse(localStorage.getItem(key) || "null");
-          if (stored && stored.submitted && stored.deviceId) marked = true;
+          if (stored && stored.submitted && stored.deviceId) {
+            if (stored.answers) document.documentElement.classList.add("survey-review");
+            else document.documentElement.classList.add("survey-already");
+            marked = true;
+          }
         } catch (e) {}
-        if (!marked && document.cookie.indexOf(key + "=") !== -1) marked = true;
-        if (marked) document.documentElement.classList.add("survey-already");
+        if (!marked && document.cookie.indexOf(key + "=") !== -1) {
+          document.documentElement.classList.add("survey-already");
+        }
       } catch (e) {}
     })();
   </script>
@@ -196,6 +214,8 @@
       <h1>《中鋼勞工月刊》讀者問卷</h1>
       <p class="lede">歡迎填寫本問卷，您的意見將提供編輯部改進月刊內容。每個裝置僅能填寫一次。</p>
     </header>
+
+    <p class="review-note" id="review-note" hidden></p>
 
     <form id="survey-form" action="#" method="get" novalidate>
       <fieldset>
@@ -333,6 +353,7 @@
 
     <section class="thanks" id="already" hidden>
       <h2>您已填答過本問卷，感謝您的參與</h2>
+      <p>此裝置未保留答案內容，因此無法再顯示您當時的回覆。</p>
     </section>
   </div>
   <script>
@@ -359,6 +380,18 @@
 
       function isFilledRecord(record) {
         return !!(record && record.submitted && record.deviceId);
+      }
+
+      function hasStoredAnswers(record) {
+        return !!(record && record.answers && typeof record.answers === "object");
+      }
+
+      function pickRicher(a, b) {
+        if (isFilledRecord(a) && hasStoredAnswers(a)) return a;
+        if (isFilledRecord(b) && hasStoredAnswers(b)) return b;
+        if (isFilledRecord(a)) return a;
+        if (isFilledRecord(b)) return b;
+        return a || b || null;
       }
 
       function readLocal() {
@@ -389,6 +422,13 @@
 
       function writeCookie(record) {
         var value = encodeURIComponent(JSON.stringify(record));
+        if (value.length > 3000) {
+          value = encodeURIComponent(JSON.stringify({
+            submitted: record.submitted,
+            deviceId: record.deviceId,
+            submittedAt: record.submittedAt
+          }));
+        }
         var cookie = SURVEY_KEY + "=" + value + "; Max-Age=" + (60 * 60 * 24 * 400) + "; Path=/; SameSite=Lax";
         if (location.protocol === "https:") cookie += "; Secure";
         document.cookie = cookie;
@@ -446,19 +486,13 @@
 
 
       function readSyncMark() {
-        var local = readLocal();
-        if (isFilledRecord(local)) return local;
-        var cookie = readCookie();
-        if (isFilledRecord(cookie)) return cookie;
-        return local || cookie || null;
+        return pickRicher(readLocal(), readCookie());
       }
 
       function readAnyMark() {
         var sync = readSyncMark();
-        if (isFilledRecord(sync)) return Promise.resolve(sync);
         return readIdb().then(function (stored) {
-          if (isFilledRecord(stored)) return stored;
-          return sync || stored || null;
+          return pickRicher(sync, stored);
         });
       }
 
@@ -468,13 +502,30 @@
         return writeIdb(record);
       }
 
-      function persistMark(deviceId) {
+      function answersFromPayload(payload) {
+        return {
+          q1: payload.q1 || "",
+          q2: payload.q2 || "",
+          q3: payload.q3 || "",
+          q4: payload.q4 || "",
+          q5: payload.q5 || "",
+          q6: payload.q6 || [],
+          q6Other: payload.q6Other || "",
+          q7: payload.q7 || "",
+          q8: payload.q8 || ""
+        };
+      }
+
+      function persistMark(deviceId, answers) {
         return readAnyMark().then(function (existing) {
           var record = {
             submitted: true,
             deviceId: deviceId || (existing && existing.deviceId) || makeDeviceId(),
-            submittedAt: new Date().toISOString()
+            submittedAt: (existing && existing.submittedAt) || new Date().toISOString()
           };
+          if (answers) record.answers = answers;
+          else if (existing && existing.answers) record.answers = existing.answers;
+          if (answers) record.submittedAt = new Date().toISOString();
           return writeRecord(record);
         });
       }
@@ -509,23 +560,102 @@
         };
       }
 
+      function formatSubmittedAt(iso) {
+        var date = iso ? new Date(iso) : null;
+        if (!date || isNaN(date.getTime())) return "";
+        var parts = new Intl.DateTimeFormat("zh-TW", {
+          timeZone: "Asia/Taipei",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        }).formatToParts(date);
+        var get = function (type) {
+          var found = parts.filter(function (part) { return part.type === type; })[0];
+          return found ? found.value : "";
+        };
+        return get("year") + "/" + get("month") + "/" + get("day") + " " + get("hour") + ":" + get("minute");
+      }
+
+      function applyAnswers(answers) {
+        function checkRadio(name, value) {
+          Array.prototype.forEach.call(document.querySelectorAll('input[name="' + name + '"]'), function (el) {
+            el.checked = !!value && el.value === value;
+          });
+        }
+        checkRadio("q1", answers.q1);
+        checkRadio("q2", answers.q2);
+        checkRadio("q3", answers.q3);
+        checkRadio("q4", answers.q4);
+        checkRadio("q5", answers.q5);
+        var topics = Array.isArray(answers.q6) ? answers.q6 : [];
+        q6Inputs.forEach(function (el) {
+          el.checked = topics.indexOf(el.value) !== -1;
+        });
+        if (q6Other) q6Other.checked = topics.indexOf("其他") !== -1 || !!answers.q6Other;
+        if (q6OtherText) q6OtherText.value = answers.q6Other || "";
+        var q7 = document.getElementById("q7");
+        var q8 = document.getElementById("q8");
+        if (q7) q7.value = answers.q7 || "";
+        if (q8) q8.value = answers.q8 || "";
+        if (q6Count) q6Count.textContent = "已選 " + checkedQ6().length + " 項，最多 3 項。";
+        if (q2Hint) q2Hint.hidden = selectedValue("q1") !== guestValue;
+      }
+
+      function setFormReadOnly() {
+        Array.prototype.forEach.call(form.querySelectorAll("input, textarea, select, button"), function (el) {
+          if (el.type === "hidden") return;
+          if (el.tagName === "TEXTAREA" || el.type === "text") el.readOnly = true;
+          else el.disabled = true;
+        });
+        if (submitButton) submitButton.hidden = true;
+        var actions = form.querySelector(".actions");
+        if (actions) actions.hidden = true;
+        form.classList.add("is-readonly");
+        form.setAttribute("aria-readonly", "true");
+      }
+
+      function showReview(record) {
+        thanks.hidden = true;
+        already.hidden = true;
+        form.hidden = false;
+        applyAnswers(record.answers || {});
+        setFormReadOnly();
+        var note = document.getElementById("review-note");
+        if (note) {
+          note.hidden = false;
+          note.textContent = "您已於 " + formatSubmittedAt(record.submittedAt) + " 填答，以下是您的回覆（僅供檢視，無法再次送出）";
+        }
+        document.documentElement.classList.add("survey-review");
+        document.documentElement.classList.remove("survey-already");
+      }
+
       function showAlready() {
         form.hidden = true;
         thanks.hidden = true;
         already.hidden = false;
+        var note = document.getElementById("review-note");
+        if (note) note.hidden = true;
         document.documentElement.classList.add("survey-already");
+        document.documentElement.classList.remove("survey-review");
       }
 
       function showForm() {
         form.hidden = false;
         thanks.hidden = true;
         already.hidden = true;
+        var note = document.getElementById("review-note");
+        if (note) note.hidden = true;
         document.documentElement.classList.remove("survey-already");
+        document.documentElement.classList.remove("survey-review");
       }
 
       function boot() {
         return readAnyMark().then(function (mark) {
-          if (isFilledRecord(mark)) showAlready();
+          if (isFilledRecord(mark) && hasStoredAnswers(mark)) showReview(mark);
+          else if (isFilledRecord(mark)) showAlready();
           else showForm();
         });
       }
@@ -598,7 +728,10 @@
         form.hidden = true;
         already.hidden = true;
         thanks.hidden = false;
+        var note = document.getElementById("review-note");
+        if (note) note.hidden = true;
         document.documentElement.classList.remove("survey-already");
+        document.documentElement.classList.remove("survey-review");
         thanks.scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
@@ -611,6 +744,9 @@
 
       form.addEventListener("submit", function (event) {
         event.preventDefault();
+        if (form.classList.contains("is-readonly") || document.documentElement.classList.contains("survey-review")) {
+          return;
+        }
         showError("submit-error", false);
         var ok = true;
         if (!requireRadio("q1", "q1-error")) ok = false;
@@ -630,26 +766,31 @@
         submitButton.disabled = true;
         submitButton.textContent = "送出中…";
         ensureDeviceId().then(function (deviceId) {
+          var payload = collectPayload(deviceId);
           return fetch(SURVEY_ENDPOINT, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(collectPayload(deviceId))
+            body: JSON.stringify(payload)
           }).then(function (res) {
             return res.json().then(function (data) {
-              return { deviceId: deviceId, data: data || {} };
+              return { deviceId: deviceId, payload: payload, data: data || {} };
             }, function () {
-              return { deviceId: deviceId, data: {} };
+              return { deviceId: deviceId, payload: payload, data: {} };
             });
           });
         }).then(function (result) {
           var data = result.data || {};
           if (data.ok) {
-            return persistMark(result.deviceId).then(showThanks);
+            return persistMark(result.deviceId, answersFromPayload(result.payload)).then(showThanks);
           }
           if (data.reason === "duplicate") {
-            return persistMark(result.deviceId).then(function () {
-              showAlready();
-              already.scrollIntoView({ behavior: "smooth", block: "start" });
+            return persistMark(result.deviceId).then(function (/* keeps existing local answers only */) {
+              return readAnyMark().then(function (mark) {
+                if (isFilledRecord(mark) && hasStoredAnswers(mark)) showReview(mark);
+                else showAlready();
+                var target = hasStoredAnswers(mark) ? form : already;
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+              });
             });
           }
           throw new Error("submit_failed");
