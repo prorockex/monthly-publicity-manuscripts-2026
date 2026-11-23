@@ -4,7 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fff8f4">
-  <title>《中鋼勞工月刊》讀者問卷（預覽版）</title>
+  <title>《中鋼勞工月刊》讀者問卷</title>
+  <script>
+    // 正式問卷後端：Google Apps Script 網頁應用程式的 /exec 網址。
+    // 部署完成後，請把下面的佔位字串換成實際網址。
+    var SURVEY_ENDPOINT = "__SURVEY_ENDPOINT__";
+  </script>
   <style>
     :root {
       --ink: #211d1d;
@@ -39,19 +44,6 @@
       outline-offset: 3px;
     }
     .wrap { width: min(720px, calc(100% - 32px)); margin: 0 auto; padding: 18px 0 64px; }
-    .preview-banner {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      margin: 0 -16px 18px;
-      padding: 10px 16px;
-      background: #fcea8b;
-      color: #211d1d;
-      text-align: center;
-      font-weight: 750;
-      font-size: 14px;
-      border-bottom: 1px solid #211d1d26;
-    }
     header { margin: 8px 0 22px; }
     header p.kicker {
       margin: 0 0 6px;
@@ -160,6 +152,8 @@
       cursor: pointer;
     }
     button[type="submit"]:hover { background: #c75a35; }
+    button[type="submit"]:disabled { opacity: .6; cursor: not-allowed; }
+    button[type="submit"]:disabled:hover { background: var(--coral); }
     .error {
       margin: 0 0 8px;
       font-size: 13px;
@@ -169,15 +163,8 @@
     .error[hidden] { display: none; }
     .thanks { text-align: center; padding: 42px 22px; }
     .thanks h2 { margin: 0 0 10px; font-size: 28px; }
-    .thanks .preview-note {
-      display: inline-block;
-      margin-top: 16px;
-      padding: 8px 14px;
-      background: #fcea8b;
-      border-radius: 999px;
-      font-weight: 800;
-    }
     .thanks p { margin: 8px 0; color: var(--muted); }
+    #submit-error { margin: 12px 0 0; }
     [hidden] { display: none !important; }
     @media (min-width: 640px) {
       .wrap { padding-top: 28px; }
@@ -191,7 +178,6 @@
     (function () {
       var key = "survey-2026-reader-v1";
       try {
-        if (/(?:^|[?&])reset=1(?:&|$)/.test(location.search || "")) return;
         var marked = false;
         try {
           var stored = JSON.parse(localStorage.getItem(key) || "null");
@@ -204,12 +190,11 @@
   </script>
 </head>
 <body>
-  <div class="preview-banner" role="status">預覽版，不會實際送出資料</div>
   <div class="wrap">
     <header>
       <p class="kicker">讀者意見調查</p>
       <h1>《中鋼勞工月刊》讀者問卷</h1>
-      <p class="lede">本頁為預覽版本，填寫後只會顯示感謝畫面，不會儲存或傳送任何資料。</p>
+      <p class="lede">歡迎填寫本問卷，您的意見將提供編輯部改進月刊內容。每個裝置僅能填寫一次。</p>
     </header>
 
     <form id="survey-form" action="#" method="get" novalidate>
@@ -336,19 +321,18 @@
       </fieldset>
 
       <div class="actions">
-        <button type="submit">送出（預覽，不會儲存）</button>
+        <button type="submit">送出</button>
       </div>
+      <p class="error" id="submit-error" hidden>送出失敗，請稍後再試</p>
     </form>
 
     <section class="thanks" id="thanks" hidden>
       <h2>感謝您的填寫</h2>
       <p>您的意見對《中鋼勞工月刊》很重要。</p>
-      <p class="preview-note">預覽版，不會實際送出資料</p>
     </section>
 
     <section class="thanks" id="already" hidden>
       <h2>您已填答過本問卷，感謝您的參與</h2>
-      <p class="preview-note">預覽版，不會實際送出資料</p>
     </section>
   </div>
   <script>
@@ -389,10 +373,6 @@
         try { localStorage.setItem(SURVEY_KEY, JSON.stringify(record)); } catch (e) {}
       }
 
-      function clearLocal() {
-        try { localStorage.removeItem(SURVEY_KEY); } catch (e) {}
-      }
-
       function readCookie() {
         var parts = (document.cookie || "").split(";");
         for (var i = 0; i < parts.length; i += 1) {
@@ -412,10 +392,6 @@
         var cookie = SURVEY_KEY + "=" + value + "; Max-Age=" + (60 * 60 * 24 * 400) + "; Path=/; SameSite=Lax";
         if (location.protocol === "https:") cookie += "; Secure";
         document.cookie = cookie;
-      }
-
-      function clearCookie() {
-        document.cookie = SURVEY_KEY + "=; Max-Age=0; Path=/; SameSite=Lax";
       }
 
       function openIdb() {
@@ -468,24 +444,6 @@
         });
       }
 
-      function clearIdb() {
-        return openIdb().then(function (db) {
-          if (!db) return;
-          return new Promise(function (resolve) {
-            var done = function () {
-              try { db.close(); } catch (e) {}
-              resolve();
-            };
-            try {
-              var req = db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).delete(IDB_ENTRY);
-              req.onsuccess = done;
-              req.onerror = done;
-            } catch (e) {
-              done();
-            }
-          });
-        });
-      }
 
       function readSyncMark() {
         var local = readLocal();
@@ -504,33 +462,51 @@
         });
       }
 
-      function persistMark() {
+      function writeRecord(record) {
+        writeLocal(record);
+        writeCookie(record);
+        return writeIdb(record);
+      }
+
+      function persistMark(deviceId) {
         return readAnyMark().then(function (existing) {
           var record = {
             submitted: true,
-            deviceId: (existing && existing.deviceId) || makeDeviceId(),
+            deviceId: deviceId || (existing && existing.deviceId) || makeDeviceId(),
             submittedAt: new Date().toISOString()
           };
-          writeLocal(record);
-          writeCookie(record);
-          return writeIdb(record);
+          return writeRecord(record);
         });
       }
 
-      function clearMark() {
-        clearLocal();
-        clearCookie();
-        return clearIdb();
+      function ensureDeviceId() {
+        return readAnyMark().then(function (existing) {
+          if (existing && existing.deviceId) return existing.deviceId;
+          var record = { deviceId: makeDeviceId() };
+          return writeRecord(record).then(function () { return record.deviceId; });
+        });
       }
 
-      // 預覽版專用：網址加上 ?reset=1 可清除已填記號以便重測。
-      // 正式上線前請移除此段 reset 邏輯（含 wantsReset、clearMark 呼叫，以及網址參數處理）。
-      function wantsReset() {
-        try {
-          return new URLSearchParams(location.search).get("reset") === "1";
-        } catch (e) {
-          return false;
-        }
+      function selectedValue(name) {
+        var found = document.querySelector('input[name="' + name + '"]:checked');
+        return found ? found.value : "";
+      }
+
+      function collectPayload(deviceId) {
+        var topics = checkedQ6().map(function (el) { return el.value; });
+        return {
+          deviceId: deviceId,
+          q1: selectedValue("q1"),
+          q2: selectedValue("q2"),
+          q3: selectedValue("q3"),
+          q4: selectedValue("q4"),
+          q5: selectedValue("q5"),
+          q6: topics,
+          q6Other: q6Other.checked ? String(q6OtherText.value || "").trim() : "",
+          q7: document.getElementById("q7").value,
+          q8: document.getElementById("q8").value,
+          userAgent: navigator.userAgent || ""
+        };
       }
 
       function showAlready() {
@@ -548,15 +524,7 @@
       }
 
       function boot() {
-        var start = wantsReset() ? clearMark() : Promise.resolve();
-        return start.then(function () {
-          if (wantsReset() && window.history && history.replaceState) {
-            var url = new URL(location.href);
-            url.searchParams.delete("reset");
-            history.replaceState({}, "", url.pathname + url.search + url.hash);
-          }
-          return readAnyMark();
-        }).then(function (mark) {
+        return readAnyMark().then(function (mark) {
           if (isFilledRecord(mark)) showAlready();
           else showForm();
         });
@@ -623,8 +591,27 @@
       syncQ2();
       syncQ6();
 
+      var submitButton = form.querySelector('button[type="submit"]');
+      var submitError = document.getElementById("submit-error");
+
+      function showThanks() {
+        form.hidden = true;
+        already.hidden = true;
+        thanks.hidden = false;
+        document.documentElement.classList.remove("survey-already");
+        thanks.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function failSubmit() {
+        showError("submit-error", true);
+        submitButton.disabled = false;
+        submitButton.textContent = "送出";
+        if (submitError) submitError.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
       form.addEventListener("submit", function (event) {
         event.preventDefault();
+        showError("submit-error", false);
         var ok = true;
         if (!requireRadio("q1", "q1-error")) ok = false;
         if (!requireRadio("q3", "q3-error")) ok = false;
@@ -640,12 +627,34 @@
           if (first) first.parentElement.scrollIntoView({ behavior: "smooth", block: "center" });
           return;
         }
-        persistMark().then(function () {
-          form.hidden = true;
-          already.hidden = true;
-          thanks.hidden = false;
-          document.documentElement.classList.remove("survey-already");
-          thanks.scrollIntoView({ behavior: "smooth", block: "start" });
+        submitButton.disabled = true;
+        submitButton.textContent = "送出中…";
+        ensureDeviceId().then(function (deviceId) {
+          return fetch(SURVEY_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(collectPayload(deviceId))
+          }).then(function (res) {
+            return res.json().then(function (data) {
+              return { deviceId: deviceId, data: data || {} };
+            }, function () {
+              return { deviceId: deviceId, data: {} };
+            });
+          });
+        }).then(function (result) {
+          var data = result.data || {};
+          if (data.ok) {
+            return persistMark(result.deviceId).then(showThanks);
+          }
+          if (data.reason === "duplicate") {
+            return persistMark(result.deviceId).then(function () {
+              showAlready();
+              already.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+          }
+          throw new Error("submit_failed");
+        }).catch(function () {
+          failSubmit();
         });
       });
 
