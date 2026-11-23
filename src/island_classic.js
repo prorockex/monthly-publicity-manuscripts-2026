@@ -137,12 +137,17 @@ export function mountClassicIsland(env) {
     return result;
   }
 
-  function makeLabel(primaryText, detailText, url, position, className = "") {
+  function makeLabel(primaryText, detailText, url, position, className = "", options = {}) {
     const anchor = document.createElement("a");
     anchor.className = `island-label ${className}`.trim();
     anchor.href = url;
     if (className.includes("group-label")) anchor.dataset.num = (primaryText.match(/\d+/) || [""])[0];
-    anchor.setAttribute("aria-label", detailText ? `${primaryText}，${detailText}，開啟審稿頁` : `${primaryText}，開啟審稿頁`);
+    if (options.openInNewTab) {
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
+    }
+    const aria = options.ariaLabel || (detailText ? `${primaryText}，${detailText}，開啟審稿頁` : `${primaryText}，開啟審稿頁`);
+    anchor.setAttribute("aria-label", aria);
     const name = document.createElement("span");
     name.textContent = primaryText;
     anchor.appendChild(name);
@@ -478,9 +483,73 @@ export function mountClassicIsland(env) {
     return person;
   }
 
+
+  // 問卷連結島：放在三角形朝相機一側（+Z）的空檔，不進入島民路徑或遊輪航線。
+  // 位置 (0, 9.2)、半徑 1.65。最近主島為第 2、3 組，中心距 8.6626，邊緣淨距 3.6126；
+  // 距 2–3 橋面中線 5.2000（甲板淨距 3.1500）；距中樞中心 9.2000（淨距 6.0000）；
+  // 內側遊輪航線（r=13.62）殼緣淨距 2.2150。
+  const SURVEY_ISLAND = { x: 0, z: 9.2, radius: 1.65, url: "survey/index.html" };
+
+  function markSurveyMeshes(root, url, meshes) {
+    root.userData.route = url;
+    root.userData.openInNewTab = true;
+    for (const m of meshes) {
+      m.userData.route = url;
+      m.userData.interactiveRoot = root;
+      m.userData.openInNewTab = true;
+      if (m.material && m.material.emissive) m.material.userData.originalEmissive = m.material.emissive.getHex();
+      targets.push(m);
+    }
+    selectableRoots.add(root);
+  }
+
+  function addSurveyProps(root) {
+    const post = mesh(new THREE.BoxGeometry(0.12, 1.15, 0.12), "#c5b5a7");
+    post.position.set(0.05, 1.62, 0);
+    const board = mesh(new THREE.BoxGeometry(0.86, 0.62, 0.08), "#fff8f4");
+    board.position.set(0.05, 2.18, 0.02);
+    const header = mesh(new THREE.BoxGeometry(0.86, 0.16, 0.09), "#db6a41");
+    header.position.set(0.05, 2.48, 0.03);
+    const box = mesh(new THREE.BoxGeometry(0.42, 0.32, 0.28), "#db6a41");
+    box.position.set(-0.62, 1.42, 0.15);
+    const slot = mesh(new THREE.BoxGeometry(0.28, 0.04, 0.04), "#211d1d");
+    slot.position.set(-0.62, 1.52, 0.30);
+    const flag = mesh(new THREE.BoxGeometry(0.16, 0.12, 0.02), "#fcea8b");
+    flag.position.set(-0.42, 1.58, 0.15);
+    const flower = mesh(new THREE.SphereGeometry(0.09, 6, 5), "#db6a41");
+    flower.position.set(0.7, 1.22, -0.35);
+    const bush = mesh(new THREE.SphereGeometry(0.18, 6, 5), "#8db07c");
+    bush.position.set(0.7, 1.16, -0.35);
+    root.add(post, board, header, box, slot, flag, flower, bush);
+    return [post, board, header, box, slot, flag, flower, bush];
+  }
+
+  function addSurveyIsland() {
+    const r = SURVEY_ISLAND.radius;
+    const url = SURVEY_ISLAND.url;
+    const root = new THREE.Group();
+    root.position.set(SURVEY_ISLAND.x, 0, SURVEY_ISLAND.z);
+    world.add(root);
+    const base = mesh(new THREE.CylinderGeometry(r * 0.96, r * 1.08, 0.5, 7, 1), "#c5b5a7");
+    base.position.y = 0.3;
+    const rim = mesh(new THREE.CylinderGeometry(r * 0.98, r * 1.02, 0.22, 7, 1), "#f4ebdd");
+    rim.position.y = 0.64;
+    const top = mesh(new THREE.CylinderGeometry(r * 0.96, r * 0.99, 0.2, 7, 1), "#f4ece4");
+    top.position.y = 0.84;
+    root.add(base, rim, top);
+    const props = addSurveyProps(root);
+    markSurveyMeshes(root, url, [base, rim, top, ...props]);
+    root.add(makeLabel("讀者問卷", "預覽版", url, { x: 0, y: 3.15, z: 0 }, "survey-label", {
+      openInNewTab: true,
+      ariaLabel: "讀者問卷，開啟問卷預覽（新分頁）"
+    }));
+    return root;
+  }
+
   groupIds.forEach((id) => addGroupIsland(id));
   const bridges = [addBridgeBetween(1, 2), addBridgeBetween(2, 3), addBridgeBetween(3, 1)];
   addHub();
+  addSurveyIsland();
   // 水面浮標＋小船（裝飾，不進 raycast）
   [[0.5, 12.6], [2.6, 12.2], [4.6, 12.8]].forEach(([a, d], i) => {
     const g = new THREE.Group(); g.position.set(Math.cos(a) * d, 0.12, Math.sin(a) * d); g.rotation.y = a; world.add(g);
@@ -643,8 +712,20 @@ export function mountClassicIsland(env) {
     stepResident(res, time, dt);
   }
 
-  const sceneExtent = LAYOUT.ringRadius + LAYOUT.islandRadius;
-  const viewDistance = (width) => Math.max(width < 560 ? 44 : 34, sceneExtent * (width < 560 ? 3.6 : 2.9));
+  const sceneExtent = Math.max(
+    LAYOUT.ringRadius + LAYOUT.islandRadius,
+    Math.hypot(SURVEY_ISLAND.x, SURVEY_ISLAND.z) + SURVEY_ISLAND.radius
+  );
+  const viewDistance = (width) => Math.max(width < 560 ? 50 : 34, sceneExtent * (width < 560 ? 4.15 : 2.9));
+  function frameHome(width) {
+    const mobileLayout = width < 560;
+    // 手機版世界轉 90° 後問卷島到 +X；鏡頭略偏右並拉遠讓標籤進畫面。桌機對準原點，不改既有構圖。
+    const targetX = mobileLayout ? 4.6 : 0;
+    const distance = viewDistance(width);
+    controls.target.set(targetX, 0.85, 0);
+    camera.position.set(targetX, distance * 0.82, distance * 0.58);
+    controls.update();
+  }
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -680,11 +761,7 @@ export function mountClassicIsland(env) {
   }
   rotateButton.addEventListener("click", onRotateClick);
   function onResetClick() {
-    controls.target.set(0, 0.85, 0);
-    const width = stage.getBoundingClientRect().width;
-    const distance = viewDistance(width);
-    camera.position.set(0, distance * 0.82, distance * 0.58);
-    controls.update();
+    frameHome(stage.getBoundingClientRect().width);
   }
   resetButton.addEventListener("click", onResetClick);
 
@@ -702,9 +779,7 @@ export function mountClassicIsland(env) {
     renderer.setSize(width, height, false);
     skyMat.uniforms.resolution.value.set(renderer.domElement.width, renderer.domElement.height);
     labelRenderer.setSize(width, height);
-    const distance = viewDistance(width);
-    camera.position.set(0, distance * 0.82, distance * 0.58);
-    controls.update();
+    frameHome(width);
   }
   let resizeObserver = null;
   if (window.ResizeObserver) {
@@ -779,6 +854,7 @@ export function mountClassicIsland(env) {
 
   let flight = null;
   function flyTo(root, route) {
+    if (root.userData.openInNewTab) { window.open(route, "_blank", "noopener,noreferrer"); return; }
     if (reducedMotion) { location.href = route; return; }
     const goal = new THREE.Vector3();
     root.getWorldPosition(goal);

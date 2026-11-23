@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8f4">
+  <title>《中鋼勞工月刊》讀者問卷（預覽版）</title>
+  <style>
+    :root {
+      --ink: #211d1d;
+      --muted: #78685e;
+      --paper: #fff8f4;
+      --sheet: #fffdf9;
+      --line: #211d1d26;
+      --coral: #db6a41;
+      --coral-soft: #f3d3c4;
+      --cream: #e6d8c8;
+      --sand: #edddcf;
+      --yellow: #fcea8b;
+      --focus: #db6a41;
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 50% 0%, #fffdf9, #fff8f4 52%, #edddcf);
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--ink);
+    }
+    a, button, input, textarea, select, label { font: inherit; color: inherit; }
+    button, input, textarea { color: var(--ink); }
+    a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+    .wrap { width: min(720px, calc(100% - 32px)); margin: 0 auto; padding: 18px 0 64px; }
+    .preview-banner {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin: 0 -16px 18px;
+      padding: 10px 16px;
+      background: #fcea8b;
+      color: #211d1d;
+      text-align: center;
+      font-weight: 750;
+      font-size: 14px;
+      border-bottom: 1px solid #211d1d26;
+    }
+    header { margin: 8px 0 22px; }
+    header p.kicker {
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--coral);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 7vw, 36px);
+      line-height: 1.2;
+      letter-spacing: -.03em;
+    }
+    .lede { margin: 10px 0 0; color: var(--muted); font-size: 15px; }
+    html.survey-already #survey-form, html.survey-already .lede { display: none !important; }
+    html.survey-already #already { display: block !important; }
+    form, .thanks {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px 20px 28px;
+      box-shadow: 0 10px 28px rgba(33, 29, 29, .06);
+    }
+    fieldset {
+      margin: 0 0 28px;
+      padding: 0;
+      border: 0;
+    }
+    legend {
+      display: block;
+      width: 100%;
+      margin: 0 0 16px;
+      padding: 8px 0 8px 14px;
+      border-left: 4px solid var(--coral);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+    .q { margin: 0 0 20px; }
+    .q-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 12px;
+      margin: 0 0 10px;
+    }
+    .q-title { font-weight: 750; font-size: 16px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--coral-soft);
+      color: #7a3a22;
+    }
+    .tag.optional { background: #efe6da; color: var(--muted); }
+    .hint {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .hint[hidden] { display: none; }
+    .choices { display: grid; gap: 8px; }
+    .choice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .choice:hover { border-color: #db6a4166; }
+    .choice:has(input:checked) {
+      border-color: var(--coral);
+      background: #fff6f1;
+    }
+    .choice:has(input:disabled) { cursor: not-allowed; opacity: .55; background: #f4ece4; }
+    .choice input { margin-top: 4px; accent-color: var(--coral); flex: 0 0 auto; }
+    .choice span { flex: 1 1 auto; }
+    .other-row { display: grid; gap: 8px; }
+    .other-row input[type="text"], textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px 12px;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    .choice.other { flex-wrap: wrap; }
+    .choice.other .other-input { width: 100%; margin-left: 26px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    button[type="submit"] {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 22px;
+      min-height: 48px;
+      background: var(--coral);
+      color: #fff8f4;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    button[type="submit"]:hover { background: #c75a35; }
+    .error {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: #9b2c14;
+      font-weight: 700;
+    }
+    .error[hidden] { display: none; }
+    .thanks { text-align: center; padding: 42px 22px; }
+    .thanks h2 { margin: 0 0 10px; font-size: 28px; }
+    .thanks .preview-note {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 8px 14px;
+      background: #fcea8b;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+    .thanks p { margin: 8px 0; color: var(--muted); }
+    [hidden] { display: none !important; }
+    @media (min-width: 640px) {
+      .wrap { padding-top: 28px; }
+      form, .thanks { padding: 32px 36px 36px; }
+      .sat { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .sat .choice { flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 12px 8px; }
+      .sat .choice input { margin: 0; }
+    }
+  </style>
+  <script>
+    (function () {
+      var key = "survey-2026-reader-v1";
+      try {
+        if (/(?:^|[?&])reset=1(?:&|$)/.test(location.search || "")) return;
+        var marked = false;
+        try {
+          var stored = JSON.parse(localStorage.getItem(key) || "null");
+          if (stored && stored.submitted && stored.deviceId) marked = true;
+        } catch (e) {}
+        if (!marked && document.cookie.indexOf(key + "=") !== -1) marked = true;
+        if (marked) document.documentElement.classList.add("survey-already");
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <div class="preview-banner" role="status">預覽版，不會實際送出資料</div>
+  <div class="wrap">
+    <header>
+      <p class="kicker">讀者意見調查</p>
+      <h1>《中鋼勞工月刊》讀者問卷</h1>
+      <p class="lede">本頁為預覽版本，填寫後只會顯示感謝畫面，不會儲存或傳送任何資料。</p>
+    </header>
+
+    <form id="survey-form" action="#" method="get" novalidate>
+      <fieldset>
+        <legend>第一部分：基本資料</legend>
+
+        <div class="q" id="q1-block">
+          <div class="q-head">
+            <div class="q-title" id="q1-title">1. 您的服務單位或身分：</div>
+            <span class="tag">必填</span>
+          </div>
+          <p class="error" id="q1-error" hidden>請選擇一項。</p>
+          <div class="choices" role="radiogroup" aria-labelledby="q1-title">
+            <label class="choice"><input type="radio" name="q1" value="中鋼本公司同仁" required><span>中鋼本公司同仁</span></label>
+            <label class="choice"><input type="radio" name="q1" value="集團子公司同仁"><span>集團子公司同仁</span></label>
+            <label class="choice"><input type="radio" name="q1" value="退休同仁"><span>退休同仁</span></label>
+            <label class="choice"><input type="radio" name="q1" value="眷屬／外部讀者"><span>眷屬／外部讀者</span></label>
+          </div>
+        </div>
+
+        <div class="q" id="q2-block">
+          <div class="q-head">
+            <div class="q-title" id="q2-title">2. 您的服務年資（非同仁免填）：</div>
+            <span class="tag optional">選填</span>
+          </div>
+          <p class="hint" id="q2-hint" hidden>您已選擇「眷屬／外部讀者」，本題可免填。</p>
+          <div class="choices" role="radiogroup" aria-labelledby="q2-title" id="q2-choices">
+            <label class="choice"><input type="radio" name="q2" value="5 年以下"><span>5 年以下</span></label>
+            <label class="choice"><input type="radio" name="q2" value="5～15 年"><span>5～15 年</span></label>
+            <label class="choice"><input type="radio" name="q2" value="15～25 年"><span>15～25 年</span></label>
+            <label class="choice"><input type="radio" name="q2" value="25 年以上"><span>25 年以上</span></label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>第二部分：閱讀習慣與體驗</legend>
+
+        <div class="q" id="q3-block">
+          <div class="q-head">
+            <div class="q-title" id="q3-title">3. 您閱讀《中鋼勞工月刊》的頻率：</div>
+            <span class="tag">必填</span>
+          </div>
+          <p class="error" id="q3-error" hidden>請選擇一項。</p>
+          <div class="choices" role="radiogroup" aria-labelledby="q3-title">
+            <label class="choice"><input type="radio" name="q3" value="每期必讀" required><span>每期必讀</span></label>
+            <label class="choice"><input type="radio" name="q3" value="經常閱讀（選擇感興趣的主題閱讀）"><span>經常閱讀（選擇感興趣的主題閱讀）</span></label>
+            <label class="choice"><input type="radio" name="q3" value="偶爾翻閱"><span>偶爾翻閱</span></label>
+            <label class="choice"><input type="radio" name="q3" value="幾乎不讀"><span>幾乎不讀</span></label>
+          </div>
+        </div>
+
+        <div class="q" id="q4-block">
+          <div class="q-head">
+            <div class="q-title" id="q4-title">4. 您目前主要的閱讀管道：</div>
+            <span class="tag">必填</span>
+          </div>
+          <p class="error" id="q4-error" hidden>請選擇一項。</p>
+          <div class="choices" role="radiogroup" aria-labelledby="q4-title">
+            <label class="choice"><input type="radio" name="q4" value="紙本月刊" required><span>紙本月刊</span></label>
+            <label class="choice"><input type="radio" name="q4" value="公司內網／電子書版本"><span>公司內網／電子書版本</span></label>
+            <label class="choice"><input type="radio" name="q4" value="行動裝置（手機／平板）"><span>行動裝置（手機／平板）</span></label>
+          </div>
+        </div>
+
+        <div class="q" id="q5-block">
+          <div class="q-head">
+            <div class="q-title" id="q5-title">5. 您對現行月刊「版面設計與排版」的滿意度：</div>
+            <span class="tag">必填</span>
+          </div>
+          <p class="error" id="q5-error" hidden>請選擇一項。</p>
+          <div class="choices sat" role="radiogroup" aria-labelledby="q5-title">
+            <label class="choice"><input type="radio" name="q5" value="非常滿意" required><span>非常滿意</span></label>
+            <label class="choice"><input type="radio" name="q5" value="滿意"><span>滿意</span></label>
+            <label class="choice"><input type="radio" name="q5" value="普通"><span>普通</span></label>
+            <label class="choice"><input type="radio" name="q5" value="不滿意"><span>不滿意</span></label>
+            <label class="choice"><input type="radio" name="q5" value="非常不滿意"><span>非常不滿意</span></label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>第三部分：內容喜好與建議</legend>
+
+        <div class="q" id="q6-block">
+          <div class="q-head">
+            <div class="q-title" id="q6-title">6. 您最感興趣的單元／主題（可複選，最多 3 項）：</div>
+            <span class="tag">必填，最多 3 項</span>
+          </div>
+          <p class="hint" id="q6-count">已選 0 項，最多 3 項。</p>
+          <p class="error" id="q6-error" hidden>請至少選擇 1 項，最多 3 項。</p>
+          <div class="choices" id="q6-choices">
+            <label class="choice"><input type="checkbox" name="q6" value="勞資溝通與權益宣導"><span>勞資溝通與權益宣導</span></label>
+            <label class="choice"><input type="checkbox" name="q6" value="工安防護與健康促進"><span>工安防護與健康促進</span></label>
+            <label class="choice"><input type="checkbox" name="q6" value="職場技能與技術分享"><span>職場技能與技術分享</span></label>
+            <label class="choice"><input type="checkbox" name="q6" value="同仁人物故事與社團活動"><span>同仁人物故事與社團活動</span></label>
+            <label class="choice"><input type="checkbox" name="q6" value="藝文創作與生活休閒"><span>藝文創作與生活休閒</span></label>
+            <label class="choice"><input type="checkbox" name="q6" value="集團重大動態與企劃"><span>集團重大動態與企劃</span></label>
+            <label class="choice other">
+              <input type="checkbox" name="q6" value="其他" id="q6-other">
+              <span>其他：</span>
+              <input class="other-input" type="text" id="q6-other-text" name="q6_other" maxlength="80" placeholder="請填寫" disabled aria-label="其他主題">
+            </label>
+          </div>
+        </div>
+
+        <div class="q" id="q7-block">
+          <div class="q-head">
+            <div class="q-title" id="q7-title">7. 未來希望增加或深入報導的主題（簡答）：</div>
+            <span class="tag optional">選填</span>
+          </div>
+          <label class="hint" for="q7">答：</label>
+          <textarea id="q7" name="q7" maxlength="500" rows="3"></textarea>
+        </div>
+
+        <div class="q" id="q8-block">
+          <div class="q-head">
+            <div class="q-title" id="q8-title">8. 對《中鋼勞工月刊》的整體改進建議或想對編輯部說的話（開放式簡答）：</div>
+            <span class="tag optional">選填</span>
+          </div>
+          <label class="hint" for="q8">答：</label>
+          <textarea id="q8" name="q8" maxlength="800" rows="5"></textarea>
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit">送出（預覽，不會儲存）</button>
+      </div>
+    </form>
+
+    <section class="thanks" id="thanks" hidden>
+      <h2>感謝您的填寫</h2>
+      <p>您的意見對《中鋼勞工月刊》很重要。</p>
+      <p class="preview-note">預覽版，不會實際送出資料</p>
+    </section>
+
+    <section class="thanks" id="already" hidden>
+      <h2>您已填答過本問卷，感謝您的參與</h2>
+      <p class="preview-note">預覽版，不會實際送出資料</p>
+    </section>
+  </div>
+  <script>
+    (function () {
+      var form = document.getElementById("survey-form");
+      var thanks = document.getElementById("thanks");
+      var already = document.getElementById("already");
+      var SURVEY_KEY = "survey-2026-reader-v1";
+      var IDB_STORE = "marks";
+      var IDB_ENTRY = "record";
+
+      function makeDeviceId() {
+        if (window.crypto && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+        var bytes = new Uint8Array(16);
+        if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+        else for (var i = 0; i < 16; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        var hex = Array.prototype.map.call(bytes, function (b) {
+          return ("0" + b.toString(16)).slice(-2);
+        }).join("");
+        return hex.slice(0, 8) + "-" + hex.slice(8, 12) + "-" + hex.slice(12, 16) + "-" + hex.slice(16, 20) + "-" + hex.slice(20);
+      }
+
+      function isFilledRecord(record) {
+        return !!(record && record.submitted && record.deviceId);
+      }
+
+      function readLocal() {
+        try {
+          return JSON.parse(localStorage.getItem(SURVEY_KEY) || "null");
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function writeLocal(record) {
+        try { localStorage.setItem(SURVEY_KEY, JSON.stringify(record)); } catch (e) {}
+      }
+
+      function clearLocal() {
+        try { localStorage.removeItem(SURVEY_KEY); } catch (e) {}
+      }
+
+      function readCookie() {
+        var parts = (document.cookie || "").split(";");
+        for (var i = 0; i < parts.length; i += 1) {
+          var part = parts[i].trim();
+          if (part.indexOf(SURVEY_KEY + "=") !== 0) continue;
+          try {
+            return JSON.parse(decodeURIComponent(part.slice(SURVEY_KEY.length + 1)));
+          } catch (e) {
+            return null;
+          }
+        }
+        return null;
+      }
+
+      function writeCookie(record) {
+        var value = encodeURIComponent(JSON.stringify(record));
+        var cookie = SURVEY_KEY + "=" + value + "; Max-Age=" + (60 * 60 * 24 * 400) + "; Path=/; SameSite=Lax";
+        if (location.protocol === "https:") cookie += "; Secure";
+        document.cookie = cookie;
+      }
+
+      function clearCookie() {
+        document.cookie = SURVEY_KEY + "=; Max-Age=0; Path=/; SameSite=Lax";
+      }
+
+      function openIdb() {
+        return new Promise(function (resolve) {
+          if (!window.indexedDB) { resolve(null); return; }
+          var req = indexedDB.open(SURVEY_KEY, 1);
+          req.onupgradeneeded = function () {
+            if (!req.result.objectStoreNames.contains(IDB_STORE)) req.result.createObjectStore(IDB_STORE);
+          };
+          req.onsuccess = function () { resolve(req.result); };
+          req.onerror = function () { resolve(null); };
+        });
+      }
+
+      function readIdb() {
+        return openIdb().then(function (db) {
+          if (!db) return null;
+          return new Promise(function (resolve) {
+            var done = function (value) {
+              try { db.close(); } catch (e) {}
+              resolve(value || null);
+            };
+            try {
+              var req = db.transaction(IDB_STORE, "readonly").objectStore(IDB_STORE).get(IDB_ENTRY);
+              req.onsuccess = function () { done(req.result); };
+              req.onerror = function () { done(null); };
+            } catch (e) {
+              done(null);
+            }
+          });
+        });
+      }
+
+      function writeIdb(record) {
+        return openIdb().then(function (db) {
+          if (!db) return;
+          return new Promise(function (resolve) {
+            var done = function () {
+              try { db.close(); } catch (e) {}
+              resolve();
+            };
+            try {
+              var req = db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).put(record, IDB_ENTRY);
+              req.onsuccess = done;
+              req.onerror = done;
+            } catch (e) {
+              done();
+            }
+          });
+        });
+      }
+
+      function clearIdb() {
+        return openIdb().then(function (db) {
+          if (!db) return;
+          return new Promise(function (resolve) {
+            var done = function () {
+              try { db.close(); } catch (e) {}
+              resolve();
+            };
+            try {
+              var req = db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).delete(IDB_ENTRY);
+              req.onsuccess = done;
+              req.onerror = done;
+            } catch (e) {
+              done();
+            }
+          });
+        });
+      }
+
+      function readSyncMark() {
+        var local = readLocal();
+        if (isFilledRecord(local)) return local;
+        var cookie = readCookie();
+        if (isFilledRecord(cookie)) return cookie;
+        return local || cookie || null;
+      }
+
+      function readAnyMark() {
+        var sync = readSyncMark();
+        if (isFilledRecord(sync)) return Promise.resolve(sync);
+        return readIdb().then(function (stored) {
+          if (isFilledRecord(stored)) return stored;
+          return sync || stored || null;
+        });
+      }
+
+      function persistMark() {
+        return readAnyMark().then(function (existing) {
+          var record = {
+            submitted: true,
+            deviceId: (existing && existing.deviceId) || makeDeviceId(),
+            submittedAt: new Date().toISOString()
+          };
+          writeLocal(record);
+          writeCookie(record);
+          return writeIdb(record);
+        });
+      }
+
+      function clearMark() {
+        clearLocal();
+        clearCookie();
+        return clearIdb();
+      }
+
+      // 預覽版專用：網址加上 ?reset=1 可清除已填記號以便重測。
+      // 正式上線前請移除此段 reset 邏輯（含 wantsReset、clearMark 呼叫，以及網址參數處理）。
+      function wantsReset() {
+        try {
+          return new URLSearchParams(location.search).get("reset") === "1";
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function showAlready() {
+        form.hidden = true;
+        thanks.hidden = true;
+        already.hidden = false;
+        document.documentElement.classList.add("survey-already");
+      }
+
+      function showForm() {
+        form.hidden = false;
+        thanks.hidden = true;
+        already.hidden = true;
+        document.documentElement.classList.remove("survey-already");
+      }
+
+      function boot() {
+        var start = wantsReset() ? clearMark() : Promise.resolve();
+        return start.then(function () {
+          if (wantsReset() && window.history && history.replaceState) {
+            var url = new URL(location.href);
+            url.searchParams.delete("reset");
+            history.replaceState({}, "", url.pathname + url.search + url.hash);
+          }
+          return readAnyMark();
+        }).then(function (mark) {
+          if (isFilledRecord(mark)) showAlready();
+          else showForm();
+        });
+      }
+
+      var q1Inputs = Array.prototype.slice.call(document.querySelectorAll('input[name="q1"]'));
+      var q2Inputs = Array.prototype.slice.call(document.querySelectorAll('input[name="q2"]'));
+      var q2Hint = document.getElementById("q2-hint");
+      var q6Inputs = Array.prototype.slice.call(document.querySelectorAll('input[name="q6"]'));
+      var q6Other = document.getElementById("q6-other");
+      var q6OtherText = document.getElementById("q6-other-text");
+      var q6Count = document.getElementById("q6-count");
+      var guestValue = "眷屬／外部讀者";
+
+      function selectedQ1() {
+        var found = q1Inputs.filter(function (el) { return el.checked; })[0];
+        return found ? found.value : "";
+      }
+
+      function syncQ2() {
+        var guest = selectedQ1() === guestValue;
+        q2Inputs.forEach(function (el) {
+          if (guest) el.checked = false;
+          el.disabled = guest;
+        });
+        q2Hint.hidden = !guest;
+      }
+
+      function checkedQ6() {
+        return q6Inputs.filter(function (el) { return el.checked; });
+      }
+
+      function syncQ6() {
+        var picked = checkedQ6();
+        var full = picked.length >= 3;
+        q6Inputs.forEach(function (el) {
+          if (!el.checked) el.disabled = full;
+        });
+        q6OtherText.disabled = !q6Other.checked;
+        if (!q6Other.checked) q6OtherText.value = "";
+        q6Count.textContent = "已選 " + picked.length + " 項，最多 3 項。";
+      }
+
+      function showError(id, on) {
+        var node = document.getElementById(id);
+        if (node) node.hidden = !on;
+      }
+
+      function requireRadio(name, errorId) {
+        var ok = !!document.querySelector('input[name="' + name + '"]:checked');
+        showError(errorId, !ok);
+        return ok;
+      }
+
+      q1Inputs.forEach(function (el) { el.addEventListener("change", syncQ2); });
+      q6Inputs.forEach(function (el) {
+        el.addEventListener("change", function (event) {
+          if (checkedQ6().length > 3) {
+            event.target.checked = false;
+          }
+          syncQ6();
+        });
+      });
+      syncQ2();
+      syncQ6();
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var ok = true;
+        if (!requireRadio("q1", "q1-error")) ok = false;
+        if (!requireRadio("q3", "q3-error")) ok = false;
+        if (!requireRadio("q4", "q4-error")) ok = false;
+        if (!requireRadio("q5", "q5-error")) ok = false;
+        var topics = checkedQ6();
+        var q6ok = topics.length >= 1 && topics.length <= 3;
+        if (q6Other.checked && !String(q6OtherText.value || "").trim()) q6ok = false;
+        showError("q6-error", !q6ok);
+        if (!q6ok) ok = false;
+        if (!ok) {
+          var first = document.querySelector(".error:not([hidden])");
+          if (first) first.parentElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+        persistMark().then(function () {
+          form.hidden = true;
+          already.hidden = true;
+          thanks.hidden = false;
+          document.documentElement.classList.remove("survey-already");
+          thanks.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+
+      boot();
+    })();
+  </script>
+</body>
+</html>
