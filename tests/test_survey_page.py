@@ -4,11 +4,15 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SURVEY = ROOT / "survey/index.html"
+SURVEY_APP = Path("/workspace/survey-backend/Index.html")
 CLASSIC = ROOT / "src/island_classic.js"
 SKY = ROOT / "src/island_sky.js"
 HOME_TEMPLATE = ROOT / "home_template.html"
 HOME = ROOT / "index.html"
+SURVEY_EXEC = (
+    "https://script.google.com/macros/s/"
+    "AKfycbxt_MPorgyHVr5diD7ax6BVVQpQPEkAqerF2ew0yTlBjedCCfiXlD1nrKA4s88w4Q5M/exec"
+)
 
 QUESTIONS = [
     "1. 您的服務單位或身分：",
@@ -50,70 +54,37 @@ def option_values(html, name):
 class SurveyPageTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.html = SURVEY.read_text(encoding="utf-8")
+        cls.html = SURVEY_APP.read_text(encoding="utf-8") if SURVEY_APP.exists() else ""
         cls.classic = CLASSIC.read_text(encoding="utf-8")
         cls.sky = SKY.read_text(encoding="utf-8")
         cls.home_template = HOME_TEMPLATE.read_text(encoding="utf-8")
         cls.home = HOME.read_text(encoding="utf-8") if HOME.exists() else ""
 
-    def test_questions_and_options_match_source_wording(self):
-        for text in SECTIONS + QUESTIONS:
-            with self.subTest(text=text):
-                self.assertIn(text, self.html)
-        self.assertEqual(option_values(self.html, "q1"), Q1)
-        self.assertEqual(option_values(self.html, "q2"), Q2)
-        self.assertEqual(option_values(self.html, "q3"), Q3)
-        self.assertEqual(option_values(self.html, "q4"), Q4)
-        self.assertEqual(option_values(self.html, "q5"), Q5)
-        self.assertIn("其他：", self.html)
-        for topic in Q6[:-1]:
-            self.assertIn(f'value="{topic}"', self.html)
+    def test_repo_no_longer_hosts_the_survey_page(self):
+        self.assertFalse((ROOT / "survey" / "index.html").exists())
+        self.assertFalse((ROOT / "survey").exists())
 
-    def test_live_submit_posts_to_endpoint_and_has_no_link_back(self):
-        self.assertRegex(self.html, r'var SURVEY_ENDPOINT = "https://script\.google\.com/macros/s/[^"]+/exec"')
-        self.assertIn('method: "POST"', self.html)
-        self.assertIn("text/plain;charset=utf-8", self.html)
-        self.assertIn("fetch(SURVEY_ENDPOINT", self.html)
-        self.assertIn("送出失敗，請稍後再試", self.html)
-        self.assertIn("送出中…", self.html)
-        self.assertIn("submitButton.disabled = true", self.html)
-        self.assertNotIn("XMLHttpRequest", self.html)
-        self.assertNotIn("預覽版", self.html)
-        self.assertNotIn("reset=1", self.html)
-        self.assertNotIn("wantsReset", self.html)
-        lowered = self.html.lower()
-        self.assertNotIn("index.html", lowered)
-        self.assertNotIn("month.html", lowered)
-        self.assertNotIn("href=\"../", lowered)
-        self.assertIsNone(re.search(r'href\s*=\s*["\'](?!#)', self.html))
-
-    def test_q6_is_capped_at_three_choices(self):
-        self.assertIn("picked.length >= 3", self.html)
-        self.assertIn("checkedQ6().length > 3", self.html)
-        self.assertIn('name="q6"', self.html)
-
-    def test_q2_disabled_for_guest_readers(self):
-        self.assertIn("眷屬／外部讀者", self.html)
-        self.assertIn("本題可免填", self.html)
-        self.assertIn("el.disabled = guest", self.html)
-
-    def test_homepage_adds_survey_entries_without_list_mode(self):
+    def test_homepage_and_islands_open_standalone_exec_url(self):
+        for source in (self.home_template, self.home, self.classic, self.sky):
+            self.assertIn(SURVEY_EXEC, source)
+            self.assertNotIn("survey/index.html", source)
+            self.assertNotIn("github.io", source)
         for source in (self.home_template, self.home):
-            self.assertIn('href="survey/index.html"', source)
-            self.assertIn("target=\"_blank\"", source)
             self.assertIn("讀者問卷", source)
             self.assertIn("survey-rail-link", source)
             self.assertIn("survey-label", source)
+            self.assertIn('target="_blank"', source)
+            self.assertIn("noopener noreferrer", source)
+            self.assertIn('referrerpolicy="no-referrer"', source)
+            self.assertIn('<meta name="referrer" content="no-referrer">', source)
             self.assertNotIn("預覽版", source)
             self.assertNotIn("清單模式", source)
-
-    def test_both_editions_open_survey_in_a_new_tab(self):
         for source in (self.classic, self.sky):
             self.assertIn("SURVEY_ISLAND", source)
-            self.assertIn("survey/index.html", source)
             self.assertIn("讀者問卷", source)
             self.assertIn("addSurveyIsland()", source)
             self.assertIn('window.open(route, "_blank", "noopener,noreferrer")', source)
+            self.assertIn('anchor.referrerPolicy = "no-referrer"', source)
             self.assertIn("openInNewTab", source)
             self.assertIn("survey-label", source)
             self.assertNotIn("預覽版", source)
@@ -144,6 +115,53 @@ class SurveyPageTests(unittest.TestCase):
             self.assertIn("z: 9.2", source)
             self.assertIn("radius: 1.65", source)
 
+    @unittest.skipUnless(SURVEY_APP.exists(), "Apps Script Index.html is not on this machine")
+    def test_questions_and_options_match_source_wording(self):
+        for text in SECTIONS + QUESTIONS:
+            with self.subTest(text=text):
+                self.assertIn(text, self.html)
+        self.assertEqual(option_values(self.html, "q1"), Q1)
+        self.assertEqual(option_values(self.html, "q2"), Q2)
+        self.assertEqual(option_values(self.html, "q3"), Q3)
+        self.assertEqual(option_values(self.html, "q4"), Q4)
+        self.assertEqual(option_values(self.html, "q5"), Q5)
+        self.assertIn("其他：", self.html)
+        for topic in Q6[:-1]:
+            self.assertIn(f'value="{topic}"', self.html)
+
+    @unittest.skipUnless(SURVEY_APP.exists(), "Apps Script Index.html is not on this machine")
+    def test_live_submit_uses_script_run_and_has_no_link_back(self):
+        self.assertIn("google.script.run", self.html)
+        self.assertIn(".submitSurvey(payload)", self.html)
+        self.assertIn("送出失敗，請稍後再試", self.html)
+        self.assertIn("送出中…", self.html)
+        self.assertIn("submitButton.disabled = true", self.html)
+        self.assertIn("canUseLocalStorage", self.html)
+        self.assertNotIn("fetch(", self.html)
+        self.assertNotIn("SURVEY_ENDPOINT", self.html)
+        self.assertNotIn("XMLHttpRequest", self.html)
+        self.assertNotIn("預覽版", self.html)
+        self.assertNotIn("reset=1", self.html)
+        self.assertNotIn("github.io", self.html)
+        self.assertNotIn("prorockex", self.html)
+        lowered = self.html.lower()
+        self.assertNotIn("month.html", lowered)
+        self.assertNotIn('href="../', lowered)
+        self.assertIsNone(re.search(r'href\s*=\s*["\'](?!#)', self.html))
+
+    @unittest.skipUnless(SURVEY_APP.exists(), "Apps Script Index.html is not on this machine")
+    def test_q6_is_capped_at_three_choices(self):
+        self.assertIn("picked.length >= 3", self.html)
+        self.assertIn("checkedQ6().length > 3", self.html)
+        self.assertIn('name="q6"', self.html)
+
+    @unittest.skipUnless(SURVEY_APP.exists(), "Apps Script Index.html is not on this machine")
+    def test_q2_disabled_for_guest_readers(self):
+        self.assertIn("眷屬／外部讀者", self.html)
+        self.assertIn("本題可免填", self.html)
+        self.assertIn("el.disabled = guest", self.html)
+
+    @unittest.skipUnless(SURVEY_APP.exists(), "Apps Script Index.html is not on this machine")
     def test_one_response_per_device_blocks_form_until_successful_submit(self):
         self.assertIn("survey-2026-reader-v1", self.html)
         self.assertIn("localStorage.setItem", self.html)
@@ -161,7 +179,6 @@ class SurveyPageTests(unittest.TestCase):
         self.assertNotIn("wantsReset", self.html)
         self.assertNotIn("reset=1", self.html)
         self.assertNotIn("預覽版", self.html)
-        # 本機記號以 JSON record 寫入，不把各題答案當作 setItem 的獨立 key
         self.assertNotRegex(
             self.html,
             r"localStorage\.setItem\([^)]*(q1|q2|q3|q4|q5|q6|q7|q8)",
@@ -174,7 +191,7 @@ class SurveyPageTests(unittest.TestCase):
         lowered = self.html.lower()
         self.assertNotIn("month.html", lowered)
 
-
+    @unittest.skipUnless(SURVEY_APP.exists(), "Apps Script Index.html is not on this machine")
     def test_submitted_answers_are_shown_read_only_and_cannot_resubmit(self):
         self.assertIn("showReview", self.html)
         self.assertIn("setFormReadOnly", self.html)
@@ -197,7 +214,6 @@ class SurveyPageTests(unittest.TestCase):
         self.assertIn("answers.q8", self.html)
         self.assertIn("answers.q6", self.html)
         self.assertIn("answers.q6Other", self.html)
-
 
 
 if __name__ == "__main__":
