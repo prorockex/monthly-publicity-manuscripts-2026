@@ -43,7 +43,7 @@ body.mode-island .topbar,body.mode-island .footer{background:#fff8f4}body.tod-da
   <script>(function(){var key="homeIslandEdition";var buttons=[].slice.call(document.querySelectorAll(".edition-switch [data-edition]"));function read(){try{if(localStorage.getItem(key)==="classic")return"classic"}catch(e){}return"sky"}function paint(v){buttons.forEach(function(b){b.setAttribute("aria-checked",b.getAttribute("data-edition")===v?"true":"false")})}paint(read());buttons.forEach(function(b){b.addEventListener("click",function(){var v=b.getAttribute("data-edition")==="classic"?"classic":"sky";try{localStorage.setItem(key,v)}catch(e){}paint(v);window.dispatchEvent(new CustomEvent("home-island-edition",{detail:v}))})})})();</script>
   <script>(function(){var btn=document.getElementById("railsToggle");function apply(open){document.body.classList.toggle("rails-hidden",!open);btn.setAttribute("aria-pressed",open?"true":"false");btn.textContent=open?"隱藏導覽":"顯示導覽";try{localStorage.setItem("homeRails",open?"open":"closed");localStorage.removeItem("homeViewMode")}catch(e){}}apply(!document.body.classList.contains("rails-hidden"));btn.addEventListener("click",function(){apply(document.body.classList.contains("rails-hidden"))})})();</script>
   <label class="month-picker"><span>月份</span><select id="monthPicker" aria-label="選擇月份文稿"></select></label>
-  <nav class="top-links" aria-label="主要導覽"><a href="__LATEST_MONTH__">最新月份審稿</a><a href="month.html">審稿站</a><a href="https://script.google.com/macros/s/AKfycbxt_MPorgyHVr5diD7ax6BVVQpQPEkAqerF2ew0yTlBjedCCfiXlD1nrKA4s88w4Q5M/exec" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">讀者問卷</a></nav>
+  <nav class="top-links" aria-label="主要導覽"><a href="__LATEST_MONTH__">最新月份審稿</a><a href="month.html">審稿站</a><a href="https://csc-reader-survey-2026.prorockex.workers.dev/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">讀者問卷</a></nav>
 </header>
 <main>
 <h1 id="page-title" class="visually-hidden">文宣群島</h1>
@@ -67,7 +67,7 @@ body.mode-island .topbar,body.mode-island .footer{background:#fff8f4}body.tod-da
       <p class="directory-intro">與上方月份同一份資料，點選進入審稿。</p>
       <p class="latest-label" id="monthNote">最新月份</p>
       <ul class="route-list groups-list" id="groupLinks">__GROUP_LINKS__</ul>
-      <p class="survey-rail-link"><a href="https://script.google.com/macros/s/AKfycbxt_MPorgyHVr5diD7ax6BVVQpQPEkAqerF2ew0yTlBjedCCfiXlD1nrKA4s88w4Q5M/exec" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">讀者問卷</a><span>新分頁</span></p>
+      <p class="survey-rail-link"><a href="https://csc-reader-survey-2026.prorockex.workers.dev/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">讀者問卷</a><span>新分頁</span></p>
     </section>
     <section class="rail rail-right" aria-labelledby="rail-right-title">
       <h2 id="rail-right-title">類別與月份</h2>
