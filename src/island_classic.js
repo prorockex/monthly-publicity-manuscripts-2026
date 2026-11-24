@@ -489,7 +489,7 @@ export function mountClassicIsland(env) {
   // 位置 (0, 9.2)、半徑 1.65。最近主島為第 2、3 組，中心距 8.6626，邊緣淨距 3.6126；
   // 距 2–3 橋面中線 5.2000（甲板淨距 3.1500）；距中樞中心 9.2000（淨距 6.0000）；
   // 內側遊輪航線（r=13.62）殼緣淨距 2.2150。
-  const SURVEY_ISLAND = { x: 0, z: 9.2, radius: 1.65, url: "https://script.google.com/macros/s/AKfycbxt_MPorgyHVr5diD7ax6BVVQpQPEkAqerF2ew0yTlBjedCCfiXlD1nrKA4s88w4Q5M/exec" };
+  const SURVEY_ISLAND = { x: 0, z: 9.2, radius: 1.65, url: "https://csc-reader-survey-2026.prorockex.workers.dev/" };
 
   function markSurveyMeshes(root, url, meshes) {
     root.userData.route = url;

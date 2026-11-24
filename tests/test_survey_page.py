@@ -9,10 +9,7 @@ CLASSIC = ROOT / "src/island_classic.js"
 SKY = ROOT / "src/island_sky.js"
 HOME_TEMPLATE = ROOT / "home_template.html"
 HOME = ROOT / "index.html"
-SURVEY_EXEC = (
-    "https://script.google.com/macros/s/"
-    "AKfycbxt_MPorgyHVr5diD7ax6BVVQpQPEkAqerF2ew0yTlBjedCCfiXlD1nrKA4s88w4Q5M/exec"
-)
+SURVEY_URL = "https://csc-reader-survey-2026.prorockex.workers.dev/"
 
 QUESTIONS = [
     "1. 您的服務單位或身分：",
@@ -64,9 +61,10 @@ class SurveyPageTests(unittest.TestCase):
         self.assertFalse((ROOT / "survey" / "index.html").exists())
         self.assertFalse((ROOT / "survey").exists())
 
-    def test_homepage_and_islands_open_standalone_exec_url(self):
+    def test_homepage_and_islands_open_workers_dev_url(self):
         for source in (self.home_template, self.home, self.classic, self.sky):
-            self.assertIn(SURVEY_EXEC, source)
+            self.assertIn(SURVEY_URL, source)
+            self.assertNotIn("script.google.com", source)
             self.assertNotIn("survey/index.html", source)
             self.assertNotIn("github.io", source)
         for source in (self.home_template, self.home):
